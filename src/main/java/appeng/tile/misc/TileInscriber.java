@@ -300,7 +300,7 @@ public class TileInscriber extends AENetworkPowerTile implements IGridTickable, 
 		{
 			return false;
 		}
-		if( getStackInSlot( slotIndex ) != null )
+		if( !getStackInSlot( slotIndex ).IsEmpty() )
 		{
 			return false;
 		}
