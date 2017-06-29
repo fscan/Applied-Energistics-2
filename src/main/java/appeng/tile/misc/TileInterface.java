@@ -26,18 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
@@ -64,6 +52,16 @@ import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.inv.IInventoryDestination;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
 
 public class TileInterface extends AENetworkInvTile implements IGridTickable, IInventoryDestination, IInterfaceHost, IPriorityHost
@@ -360,12 +358,5 @@ public class TileInterface extends AENetworkInvTile implements IGridTickable, II
 			return result;
 		}
 		return super.getCapability( capability, facing );
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

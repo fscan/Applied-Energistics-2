@@ -41,11 +41,11 @@ public class ContainerSkyChest extends AEBaseContainer
 		{
 			for( int x = 0; x < 9; x++ )
 			{
-				this.addSlotToContainer( new SlotNormal( this.chest, y * 9 + x, 8 + 18 * x, 24 + 18 * y ) );
+				this.addSlotToContainer( new SlotNormal( this.chest.getInternalInventory(), y * 9 + x, 8 + 18 * x, 24 + 18 * y ) );
 			}
 		}
 
-		this.chest.openInventory( ip.player );
+		this.chest.getInternalInventory().openInventory( ip.player );
 
 		this.bindPlayerInventory( ip, 0, 195 - /* height of player inventory */82 );
 	}
@@ -54,6 +54,6 @@ public class ContainerSkyChest extends AEBaseContainer
 	public void onContainerClosed( final EntityPlayer par1EntityPlayer )
 	{
 		super.onContainerClosed( par1EntityPlayer );
-		this.chest.closeInventory( par1EntityPlayer );
+		this.chest.getInternalInventory().closeInventory( par1EntityPlayer );
 	}
 }

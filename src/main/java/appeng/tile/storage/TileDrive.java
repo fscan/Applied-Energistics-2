@@ -23,13 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.IChestOrDrive;
 import appeng.api.networking.GridFlags;
@@ -56,8 +49,15 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
 
 public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPriorityHost
@@ -68,7 +68,14 @@ public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPrior
 	private static final int BIT_STATE_MASK = 0xDB6DB6DB;
 
 	private final int[] sides = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 10 );
+	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 10 )
+	{
+		@Override
+		public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+		{
+			return !itemstack.isEmpty() && AEApi.instance().registries().cell().isCellHandled( itemstack );
+		}
+	};
 	private final ICellHandler[] handlersBySlot = new ICellHandler[10];
 	private final DriveWatcher<IAEItemStack>[] invBySlot = new DriveWatcher[10];
 	private final BaseActionSource mySrc;
@@ -262,11 +269,6 @@ public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPrior
 		return this.inv;
 	}
 
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return !itemstack.isEmpty() && AEApi.instance().registries().cell().isCellHandled( itemstack );
-	}
 
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
@@ -408,12 +410,5 @@ public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPrior
 	public void saveChanges( final IMEInventory cellInventory )
 	{
 		this.world.markChunkDirty( this.pos, this );
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

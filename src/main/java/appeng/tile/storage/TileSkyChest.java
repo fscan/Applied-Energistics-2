@@ -19,21 +19,21 @@
 package appeng.tile.storage;
 
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
-
 import appeng.tile.AEBaseInvTile;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 
 
 public class TileSkyChest extends AEBaseInvTile implements ITickable
@@ -76,7 +76,49 @@ public class TileSkyChest extends AEBaseInvTile implements ITickable
 			33,
 			34,
 			35 };
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 9 * 4 );
+	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 9 * 4 ) 
+	{
+		@Override
+		public void openInventory( final EntityPlayer player )
+		{
+			if( !player.isSpectator() )
+			{
+				setPlayerOpen( getPlayerOpen() + 1 );
+				world.addBlockEvent( pos, getBlockType(), 1, numPlayersUsing );
+				world.notifyNeighborsOfStateChange( pos, getBlockType(), true );
+				world.notifyNeighborsOfStateChange( pos.down(), getBlockType(), true );
+
+				if( getPlayerOpen() == 1 )
+				{
+					getWorld().playSound( player, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, getWorld().rand.nextFloat() * 0.1F + 0.9F );
+					markForUpdate();
+				}
+			}
+		}
+
+		@Override
+		public void closeInventory( final EntityPlayer player )
+		{
+			if( !player.isSpectator() )
+			{
+				setPlayerOpen( getPlayerOpen() - 1 );
+				world.addBlockEvent( pos, getBlockType(), 1, numPlayersUsing );
+				world.notifyNeighborsOfStateChange( pos, getBlockType(), true );
+				world.notifyNeighborsOfStateChange( pos.down(), getBlockType(), true );
+
+				if( getPlayerOpen() < 0 )
+				{
+					setPlayerOpen( 0 );
+				}
+
+				if( getPlayerOpen() == 0 )
+				{
+					getWorld().playSound( player, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, getWorld().rand.nextFloat() * 0.1F + 0.9F );
+					markForUpdate();
+				}
+			}
+		}	
+	};
 	// server
 	private int numPlayersUsing;
 	// client..
@@ -122,46 +164,7 @@ public class TileSkyChest extends AEBaseInvTile implements ITickable
 		return this.inv;
 	}
 
-	@Override
-	public void openInventory( final EntityPlayer player )
-	{
-		if( !player.isSpectator() )
-		{
-			this.setPlayerOpen( this.getPlayerOpen() + 1 );
-			this.world.addBlockEvent( this.pos, this.getBlockType(), 1, this.numPlayersUsing );
-			this.world.notifyNeighborsOfStateChange( this.pos, this.getBlockType(), true );
-			this.world.notifyNeighborsOfStateChange( this.pos.down(), this.getBlockType(), true );
-
-			if( this.getPlayerOpen() == 1 )
-			{
-				this.getWorld().playSound( player, this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.getWorld().rand.nextFloat() * 0.1F + 0.9F );
-				this.markForUpdate();
-			}
-		}
-	}
-
-	@Override
-	public void closeInventory( final EntityPlayer player )
-	{
-		if( !player.isSpectator() )
-		{
-			this.setPlayerOpen( this.getPlayerOpen() - 1 );
-			this.world.addBlockEvent( this.pos, this.getBlockType(), 1, this.numPlayersUsing );
-			this.world.notifyNeighborsOfStateChange( this.pos, this.getBlockType(), true );
-			this.world.notifyNeighborsOfStateChange( this.pos.down(), this.getBlockType(), true );
-
-			if( this.getPlayerOpen() < 0 )
-			{
-				this.setPlayerOpen( 0 );
-			}
-
-			if( this.getPlayerOpen() == 0 )
-			{
-				this.getWorld().playSound( player, this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.getWorld().rand.nextFloat() * 0.1F + 0.9F );
-				this.markForUpdate();
-			}
-		}
-	}
+	
 
 	@Override
 	public void update()
@@ -251,12 +254,5 @@ public class TileSkyChest extends AEBaseInvTile implements ITickable
 	private void setLastEvent( final long lastEvent )
 	{
 		this.lastEvent = lastEvent;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

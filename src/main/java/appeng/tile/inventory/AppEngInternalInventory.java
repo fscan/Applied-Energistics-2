@@ -21,15 +21,14 @@ package appeng.tile.inventory;
 
 import java.util.Iterator;
 
+import appeng.core.AELog;
+import appeng.util.Platform;
+import appeng.util.iterators.InvIterator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
-
-import appeng.core.AELog;
-import appeng.util.Platform;
-import appeng.util.iterators.InvIterator;
 
 
 public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
@@ -40,14 +39,19 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 	private IAEAppEngInventory te;
 	private int maxStack;
 
-	public AppEngInternalInventory( final IAEAppEngInventory inventory, final int size )
+	public AppEngInternalInventory( final IAEAppEngInventory inventory, final int size, final int maxStack )
 	{
 		this.setTileEntity( inventory );
 		this.size = size;
-		this.maxStack = 64;
+		this.maxStack = maxStack;
 		this.inv = new ItemStack[size];
 	}
 
+	public AppEngInternalInventory( final IAEAppEngInventory inventory, final int size ) 
+	{
+		this(inventory, size, 64);
+	}
+	
 	public boolean isEmpty()
 	{
 		for( int x = 0; x < this.size; x++ )
@@ -327,7 +331,7 @@ public class AppEngInternalInventory implements IInventory, Iterable<ItemStack>
 		this.enableClientEvents = enableClientEvents;
 	}
 
-	private IAEAppEngInventory getTileEntity()
+	protected IAEAppEngInventory getTileEntity()
 	{
 		return this.te;
 	}

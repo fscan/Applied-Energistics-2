@@ -22,20 +22,6 @@ package appeng.tile.crafting;
 import java.io.IOException;
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -68,13 +54,26 @@ import appeng.parts.automation.UpgradeInventory;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
-import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 
 public class TileMolecularAssembler extends AENetworkInvTile implements IUpgradeableHost, IConfigManagerHost, IGridTickable, ICraftingMachine, IPowerChannelState
@@ -82,7 +81,30 @@ public class TileMolecularAssembler extends AENetworkInvTile implements IUpgrade
 	private static final int[] SIDES = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 	private final InventoryCrafting craftingInv;
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 9 + 2 );
+	private final AppEngInternalSidedInventory inv = new AppEngInternalSidedInventory( this, 9 + 2, 1 )
+	{
+		@Override
+		public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+		{
+			if( i >= 9 )
+			{
+				return false;
+			}
+
+			if( TileMolecularAssembler.this.hasPattern() )
+			{
+				return TileMolecularAssembler.this.myPlan.isValidItemForSlot( i, itemstack, TileMolecularAssembler.this.getWorld() );
+			}
+
+			return false;
+		}
+		
+		@Override
+		public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
+		{
+			return slotIndex == 9;
+		}
+	};
 	private final IConfigManager settings;
 	private final UpgradeInventory upgrades;
 	private boolean isPowered = false;
@@ -338,32 +360,12 @@ public class TileMolecularAssembler extends AENetworkInvTile implements IUpgrade
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public ISidedInventory getInternalInventory()
 	{
 		return this.inv;
 	}
 
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return 1;
-	}
 
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		if( i >= 9 )
-		{
-			return false;
-		}
-
-		if( this.hasPattern() )
-		{
-			return this.myPlan.isValidItemForSlot( i, itemstack, this.getWorld() );
-		}
-
-		return false;
-	}
 
 	private boolean hasPattern()
 	{
@@ -379,11 +381,6 @@ public class TileMolecularAssembler extends AENetworkInvTile implements IUpgrade
 		}
 	}
 
-	@Override
-	public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
-	{
-		return slotIndex == 9;
-	}
 
 	@Override
 	public int[] getAccessibleSlotsBySide( final EnumFacing whichSide )
@@ -653,12 +650,4 @@ public class TileMolecularAssembler extends AENetworkInvTile implements IUpgrade
 	{
 		return this.isPowered;
 	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

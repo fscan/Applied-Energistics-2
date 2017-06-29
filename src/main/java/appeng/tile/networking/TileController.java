@@ -21,11 +21,6 @@ package appeng.tile.networking;
 
 import java.util.EnumSet;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.events.MENetworkControllerChange;
@@ -41,7 +36,15 @@ import appeng.block.networking.BlockController.ControllerBlockState;
 import appeng.me.GridAccessException;
 import appeng.tile.grid.AENetworkPowerTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 
 public class TileController extends AENetworkPowerTile
@@ -210,6 +213,15 @@ public class TileController extends AENetworkPowerTile
 	{
 		return ACCESSIBLE_SLOTS_BY_SIDE;
 	}
+	
+	@Override
+	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
+	{
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+			return false;
+		
+		return super.hasCapability( capability, facing );
+	}
 
 	/**
 	 * Check for a controller at this coordinates as well as is it loaded.
@@ -224,13 +236,6 @@ public class TileController extends AENetworkPowerTile
 			return this.world.getTileEntity( pos ) instanceof TileController;
 		}
 
-		return false;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

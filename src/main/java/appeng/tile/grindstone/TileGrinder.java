@@ -22,20 +22,20 @@ package appeng.tile.grindstone;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-
 import appeng.api.AEApi;
 import appeng.api.features.IGrinderRecipe;
 import appeng.api.implementations.tiles.ICrankable;
 import appeng.tile.AEBaseInvTile;
-import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.WrapperInventoryRange;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 
 
 public class TileGrinder extends AEBaseInvTile implements ICrankable
@@ -43,7 +43,27 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 
 	private final int[] inputs = { 0, 1, 2 };
 	private final int[] sides = { 0, 1, 2, 3, 4, 5 };
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 7 );
+	private final AppEngInternalSidedInventory inv = new AppEngInternalSidedInventory( this, 7 )
+	{
+		@Override
+		public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
+		{
+			if( AEApi.instance().registries().grinder().getRecipeForInput( insertingItem ) == null )
+			{
+				return false;
+			}
+
+			return slotIndex >= 0 && slotIndex <= 2;
+		}
+
+		@Override
+		public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
+		{
+			return slotIndex >= 3 && slotIndex <= 5;
+		}
+
+	};
+	
 	private int points;
 
 	@Override
@@ -55,7 +75,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public ISidedInventory getInternalInventory()
 	{
 		return this.inv;
 	}
@@ -66,22 +86,6 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 
 	}
 
-	@Override
-	public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
-	{
-		if( AEApi.instance().registries().grinder().getRecipeForInput( insertingItem ) == null )
-		{
-			return false;
-		}
-
-		return slotIndex >= 0 && slotIndex <= 2;
-	}
-
-	@Override
-	public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
-	{
-		return slotIndex >= 3 && slotIndex <= 5;
-	}
 
 	@Override
 	public int[] getAccessibleSlotsBySide( final EnumFacing side )
@@ -97,9 +101,9 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 			return false;
 		}
 
-		if( this.getStackInSlot( 6 ).isEmpty() ) // Add if there isn't one...
+		if( inv.getStackInSlot( 6 ).isEmpty() ) // Add if there isn't one...
 		{
-			final IInventory src = new WrapperInventoryRange( this, this.inputs, true );
+			final IInventory src = new WrapperInventoryRange( inv, this.inputs, true );
 			for( int x = 0; x < src.getSizeInventory(); x++ )
 			{
 				ItemStack item = src.getStackInSlot( x );
@@ -123,7 +127,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 						}
 
 						src.setInventorySlotContents( x, item );
-						this.setInventorySlotContents( 6, ais );
+						inv.setInventorySlotContents( 6, ais );
 						return true;
 					}
 				}
@@ -143,7 +147,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 
 		this.points++;
 
-		final ItemStack processing = this.getStackInSlot( 6 );
+		final ItemStack processing = inv.getStackInSlot( 6 );
 		final IGrinderRecipe r = AEApi.instance().registries().grinder().getRecipeForInput( processing );
 		if( r != null )
 		{
@@ -153,7 +157,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 			}
 
 			this.points = 0;
-			final InventoryAdaptor sia = InventoryAdaptor.getAdaptor( new WrapperInventoryRange( this, 3, 3, true ), EnumFacing.EAST );
+			final InventoryAdaptor sia = InventoryAdaptor.getAdaptor( new WrapperInventoryRange( inv, 3, 3, true ), EnumFacing.EAST );
 
 			this.addItem( sia, r.getOutput() );
 
@@ -177,7 +181,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 				}
 			} );
 
-			this.setInventorySlotContents( 6, ItemStack.EMPTY );
+			inv.setInventorySlotContents( 6, ItemStack.EMPTY );
 		}
 	}
 
@@ -202,12 +206,5 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 	public boolean canCrankAttach( final EnumFacing directionToCrank )
 	{
 		return this.getUp() == directionToCrank;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

@@ -19,11 +19,6 @@
 package appeng.tile.networking;
 
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-
 import appeng.api.config.Actionable;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.util.AECableType;
@@ -31,7 +26,15 @@ import appeng.api.util.AEPartLocation;
 import appeng.me.GridAccessException;
 import appeng.tile.grid.AENetworkPowerTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 
 public class TileEnergyAcceptor extends AENetworkPowerTile
@@ -108,6 +111,16 @@ public class TileEnergyAcceptor extends AENetworkPowerTile
 	}
 
 	@Override
+	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
+	{
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+			return false;
+		
+		return super.hasCapability( capability, facing );
+	}
+
+	
+	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
 
@@ -118,12 +131,4 @@ public class TileEnergyAcceptor extends AENetworkPowerTile
 	{
 		return this.sides;
 	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

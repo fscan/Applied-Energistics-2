@@ -19,12 +19,6 @@
 package appeng.tile.spatial;
 
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.YesNo;
@@ -44,17 +38,36 @@ import appeng.me.cache.SpatialPylonCache;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
-import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.IWorldCallable;
 import appeng.util.Platform;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 
 public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallable<Void>
 {
 
 	private final int[] sides = { 0, 1 };
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 2 );
+	private final AppEngInternalSidedInventory inv = new AppEngInternalSidedInventory( this, 2 )
+	{
+		@Override
+		public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+		{
+			return( i == 0 && isSpatialCell( itemstack ) );
+		}
+
+		@Override
+		public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
+		{
+			return slotIndex == 1;
+		}
+	};
 	private YesNo lastRedstoneState = YesNo.UNDECIDED;
 
 	public TileSpatialIOPort()
@@ -104,7 +117,7 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	{
 		if( Platform.isServer() )
 		{
-			final ItemStack cell = this.getStackInSlot( 0 );
+			final ItemStack cell = inv.getStackInSlot( 0 );
 			if( this.isSpatialCell( cell ) )
 			{
 				TickHandler.INSTANCE.addCallable( null, this );// this needs to be cross world synced.
@@ -125,8 +138,8 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	@Override
 	public Void call( final World world ) throws Exception
 	{
-		final ItemStack cell = this.getStackInSlot( 0 );
-		if( this.isSpatialCell( cell ) && this.getStackInSlot( 1 ).isEmpty() )
+		final ItemStack cell = inv.getStackInSlot( 0 );
+		if( this.isSpatialCell( cell ) && inv.getStackInSlot( 1 ).isEmpty() )
 		{
 			final IGrid gi = this.getProxy().getGrid();
 			final IEnergyGrid energy = this.getProxy().getEnergy();
@@ -147,8 +160,8 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 						if( tr.success )
 						{
 							energy.extractAEPower( req, Actionable.MODULATE, PowerMultiplier.CONFIG );
-							this.setInventorySlotContents( 0, ItemStack.EMPTY );
-							this.setInventorySlotContents( 1, cell );
+							inv.setInventorySlotContents( 0, ItemStack.EMPTY );
+							inv.setInventorySlotContents( 1, cell );
 						}
 					}
 				}
@@ -171,16 +184,11 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public ISidedInventory getInternalInventory()
 	{
 		return this.inv;
 	}
 
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return( i == 0 && this.isSpatialCell( itemstack ) );
-	}
 
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
@@ -188,28 +196,10 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 
 	}
 
-	@Override
-	public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
-	{
-		return this.isItemValidForSlot( slotIndex, insertingItem );
-	}
-
-	@Override
-	public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
-	{
-		return slotIndex == 1;
-	}
 
 	@Override
 	public int[] getAccessibleSlotsBySide( final EnumFacing side )
 	{
 		return this.sides;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

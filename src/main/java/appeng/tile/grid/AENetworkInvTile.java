@@ -19,8 +19,6 @@
 package appeng.tile.grid;
 
 
-import net.minecraft.nbt.NBTTagCompound;
-
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.util.AEPartLocation;
@@ -29,6 +27,7 @@ import appeng.me.helpers.IGridProxyable;
 import appeng.tile.AEBaseInvTile;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
+import net.minecraft.nbt.NBTTagCompound;
 
 
 public abstract class AENetworkInvTile extends AEBaseInvTile implements IActionHost, IGridProxyable
@@ -99,17 +98,4 @@ public abstract class AENetworkInvTile extends AEBaseInvTile implements IActionH
 	{
 		return this.getProxy().getNode();
 	}
-
-	@Override
-	public int getField( final int id )
-	{
-		return 0;
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
 }

@@ -21,19 +21,6 @@ package appeng.tile.misc;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-
 import appeng.api.AEApi;
 import appeng.api.config.CondenserOutput;
 import appeng.api.config.Settings;
@@ -51,11 +38,24 @@ import appeng.capabilities.Capabilities;
 import appeng.tile.AEBaseInvTile;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
-import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.FluidTankProperties;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 
 public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, IConfigurableObject
@@ -67,7 +67,42 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 			0,
 			1
 	};
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 3 );
+	private final AppEngInternalSidedInventory inv = new AppEngInternalSidedInventory( this, 3 )
+	{
+		@Override
+		public void setInventorySlotContents( final int i, final ItemStack itemstack )
+		{
+			if( i == 0 )
+			{
+				if( !itemstack.isEmpty() )
+				{
+					addPower( itemstack.getCount() );
+				}
+			}
+			else
+			{
+				setInventorySlotContents( 1, itemstack );
+			}
+		}
+
+		@Override
+		public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+		{
+			return i == 0;
+		}
+		
+		@Override
+		public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
+		{
+			return slotIndex == 0;
+		}
+
+		@Override
+		public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
+		{
+			return slotIndex != 0;
+		}
+	};
 	private final ConfigManager cm = new ConfigManager( this );
 	private final IItemHandler itemHandler = new ItemHandler();
 	private final IFluidHandler fluidHandler = new FluidHandler();
@@ -134,7 +169,7 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 
 	private boolean canAddOutput( final ItemStack output )
 	{
-		final ItemStack outputStack = this.getStackInSlot( 1 );
+		final ItemStack outputStack = inv.getStackInSlot( 1 );
 		return outputStack.isEmpty() || ( Platform.itemComparisons().isEqualItem( outputStack,
 				output ) && outputStack.getCount() < outputStack.getMaxStackSize() );
 	}
@@ -146,15 +181,15 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 	 */
 	private void addOutput( final ItemStack output )
 	{
-		final ItemStack outputStack = this.getStackInSlot( 1 );
+		final ItemStack outputStack = inv.getStackInSlot( 1 );
 		if( outputStack.isEmpty() )
 		{
-			this.setInventorySlotContents( 1, output.copy() );
+			inv.setInventorySlotContents( 1, output.copy() );
 		}
 		else
 		{
 			outputStack.grow( 1 );
-			this.setInventorySlotContents( 1, outputStack );
+			inv.setInventorySlotContents( 1, outputStack );
 		}
 	}
 
@@ -182,32 +217,12 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public ISidedInventory getInternalInventory()
 	{
 		return this.inv;
 	}
 
-	@Override
-	public void setInventorySlotContents( final int i, final ItemStack itemstack )
-	{
-		if( i == 0 )
-		{
-			if( !itemstack.isEmpty() )
-			{
-				this.addPower( itemstack.getCount() );
-			}
-		}
-		else
-		{
-			this.inv.setInventorySlotContents( 1, itemstack );
-		}
-	}
 
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return i == 0;
-	}
 
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
@@ -223,17 +238,6 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 		}
 	}
 
-	@Override
-	public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
-	{
-		return slotIndex == 0;
-	}
-
-	@Override
-	public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
-	{
-		return slotIndex != 0;
-	}
 
 	@Override
 	public int[] getAccessibleSlotsBySide( final EnumFacing side )
@@ -416,12 +420,5 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 		{
 			return fluidInventory;
 		}
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

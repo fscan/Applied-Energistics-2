@@ -22,16 +22,6 @@ package appeng.tile.qnb;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.block.Block;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-
 import appeng.api.AEApi;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.networking.GridFlags;
@@ -49,8 +39,18 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 
 
 public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock, ITickable
@@ -58,7 +58,7 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	private final byte corner = 16;
 	private final int[] sidesRing = {};
 	private final int[] sidesLink = { 0 };
-	private final AppEngInternalInventory internalInventory = new AppEngInternalInventory( this, 1 );
+	private final AppEngInternalInventory internalInventory = new AppEngInternalInventory( this, 1, 1 );
 	private final byte hasSingularity = 32;
 	private final byte powered = 64;
 
@@ -72,7 +72,6 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 		this.getProxy().setValidSides( EnumSet.noneOf( EnumFacing.class ) );
 		this.getProxy().setFlags( GridFlags.DENSE_CAPACITY );
 		this.getProxy().setIdlePowerUsage( 22 );
-		this.internalInventory.setMaxStackSize( 1 );
 	}
 
 	@Override
@@ -94,7 +93,7 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	{
 		int out = this.constructed;
 
-		if( !this.getStackInSlot( 0 ).isEmpty() && this.constructed != -1 )
+		if( !internalInventory.getStackInSlot( 0 ).isEmpty() && this.constructed != -1 )
 		{
 			out |= this.hasSingularity;
 		}
@@ -344,12 +343,5 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	public byte getCorner()
 	{
 		return this.corner;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

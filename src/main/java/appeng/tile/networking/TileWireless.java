@@ -21,12 +21,6 @@ package appeng.tile.networking;
 
 import java.util.EnumSet;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-
 import appeng.api.AEApi;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.implementations.tiles.IWirelessAccessPoint;
@@ -44,8 +38,14 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.AppEngInternalSidedInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 
 
 public class TileWireless extends AENetworkInvTile implements IWirelessAccessPoint, IPowerChannelState
@@ -55,7 +55,15 @@ public class TileWireless extends AENetworkInvTile implements IWirelessAccessPoi
 	public static final int CHANNEL_FLAG = 2;
 
 	private final int[] sides = { 0 };
-	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 1 );
+	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 1 )
+	{
+		@Override
+		public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+		{
+			return AEApi.instance().definitions().materials().wirelessBooster().isSameAs( itemstack );
+		}
+
+	};
 
 	private int clientFlags = 0;
 
@@ -136,11 +144,6 @@ public class TileWireless extends AENetworkInvTile implements IWirelessAccessPoi
 		return this.inv;
 	}
 
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return AEApi.instance().definitions().materials().wirelessBooster().isSameAs( itemstack );
-	}
 
 	@Override
 	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
@@ -222,12 +225,5 @@ public class TileWireless extends AENetworkInvTile implements IWirelessAccessPoi
 	private void setClientFlags( final int clientFlags )
 	{
 		this.clientFlags = clientFlags;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }
