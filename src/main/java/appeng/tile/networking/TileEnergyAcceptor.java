@@ -19,27 +19,24 @@
 package appeng.tile.networking;
 
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-
 import appeng.api.config.Actionable;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEPartLocation;
 import appeng.me.GridAccessException;
 import appeng.tile.grid.AENetworkPowerTile;
-import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 
 public class TileEnergyAcceptor extends AENetworkPowerTile
 {
-
-	private static final AppEngInternalInventory INTERNAL_INVENTORY = new AppEngInternalInventory( null, 0 );
-	private final int[] sides = {};
-
 	public TileEnergyAcceptor()
 	{
 		this.getProxy().setIdlePowerUsage( 0.0 );
@@ -100,30 +97,24 @@ public class TileEnergyAcceptor extends AENetworkPowerTile
 			return super.funnelPowerIntoStorage( power, mode );
 		}
 	}
-
+	
 	@Override
-	public IInventory getInternalInventory()
+	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
 	{
-		return INTERNAL_INVENTORY;
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+			return false;
+		return super.hasCapability( capability, facing );
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
+	public IItemHandlerModifiable getInternalInventory()
 	{
-
+		return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
 	}
 
 	@Override
-	public int[] getAccessibleSlotsBySide( final EnumFacing side )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
-		return this.sides;
-	}
 
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
-
 }

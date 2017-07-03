@@ -21,11 +21,7 @@ package appeng.tile.inventory;
 
 import java.util.Iterator;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.ITextComponent;
+import javax.annotation.Nonnull;
 
 import appeng.api.AEApi;
 import appeng.api.storage.data.IAEItemStack;
@@ -34,11 +30,14 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import appeng.util.iterators.AEInvIterator;
 import appeng.util.iterators.InvIterator;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 
-public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack>
+public class AppEngInternalAEInventory implements IItemHandlerModifiable, Iterable<ItemStack>
 {
-
 	private final IAEAppEngInventory te;
 	private final IAEItemStack[] inv;
 	private final int size;
@@ -50,18 +49,6 @@ public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack
 		this.size = s;
 		this.maxStack = 64;
 		this.inv = new IAEItemStack[s];
-	}
-
-	public boolean isEmpty()
-	{
-		for( int x = 0; x < this.size; x++ )
-		{
-			if( !this.getStackInSlot( x ).isEmpty() )
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 
 	public void setMaxStackSize( final int s )
@@ -130,9 +117,14 @@ public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack
 			}
 		}
 	}
+	
+    protected int getStackLimit(int slot, @Nonnull ItemStack stack)
+    {
+        return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+    }
 
 	@Override
-	public int getSizeInventory()
+	public int getSlots()
 	{
 		return this.size;
 	}
@@ -149,42 +141,85 @@ public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack
 	}
 
 	@Override
-	public ItemStack decrStackSize( final int slot, final int qty )
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) 
+	{
+		 if (stack.isEmpty())
+		 {
+	            return ItemStack.EMPTY;
+		 }
+
+		 ItemStack existing = getStackInSlot(slot);
+		 int limit = getStackLimit(slot, stack);
+
+		 if (!existing.isEmpty())
+	     {
+			 if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+				 return stack;
+
+			 limit -= existing.getCount();
+	     }
+
+		 if (limit <= 0)
+			 return stack;
+
+		 boolean reachedLimit = stack.getCount() > limit;
+
+	     if (!simulate)
+	     {
+	    	 if (existing.isEmpty())
+	         {
+	    		 this.inv[slot] = AEApi.instance().storage().createItemStack( reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack );
+	         }
+	         else
+	         {
+	        	 existing.grow(reachedLimit ? limit : stack.getCount());
+	         }
+	    	 if(this.te != null && Platform.isServer() )
+	    	 {
+				this.te.onChangeInventory( this, slot, InvOperation.insert, ItemStack.EMPTY,  reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+	    	 }	    	 
+	     }
+	     return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()- limit) : ItemStack.EMPTY;
+	}
+
+	@Override
+	public ItemStack extractItem(int slot, int amount, boolean simulate) 
 	{
 		if( this.inv[slot] != null )
-		{
+		{		
 			final ItemStack split = this.getStackInSlot( slot );
-			ItemStack ns = ItemStack.EMPTY;
 
-			if( qty >= split.getCount() )
+			if( amount >= split.getCount() )
 			{
-				ns = this.getStackInSlot( slot );
-				this.inv[slot] = null;
+				if (!simulate)
+				{
+					this.inv[slot] = null;
+					if(this.te != null && Platform.isServer() )
+					{
+						this.te.onChangeInventory( this, slot, InvOperation.extract, split, ItemStack.EMPTY );
+					}
+				}
+				return split;
 			}
 			else
 			{
-				ns = split.splitStack( qty );
+				if (!simulate)
+				{
+					split.grow( -amount );
+					if(this.te != null && Platform.isServer() )
+					{
+						this.te.onChangeInventory( this, slot, InvOperation.extract, ItemHandlerHelper.copyStackWithSize(split, amount), ItemStack.EMPTY );
+					}
+				}				
+				return ItemHandlerHelper.copyStackWithSize(split, amount);
 			}
-
-			if( this.te != null && Platform.isServer() )
-			{
-				this.te.onChangeInventory( this, slot, InvOperation.decreaseStackSize, ns, ItemStack.EMPTY );
-			}
-
-			return ns;
 		}
-
 		return ItemStack.EMPTY;
 	}
 
-	@Override
-	public ItemStack removeStackFromSlot( final int var1 )
-	{
-		return ItemStack.EMPTY;
-	}
 
 	@Override
-	public void setInventorySlotContents( final int slot, final ItemStack newItemStack )
+	public void setStackInSlot( final int slot, final ItemStack newItemStack )
 	{
 		final ItemStack oldStack = this.getStackInSlot( slot );
 		this.inv[slot] = AEApi.instance().storage().createItemStack( newItemStack );
@@ -213,50 +248,20 @@ public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack
 					removed = added = ItemStack.EMPTY;
 				}
 			}
-
-			this.te.onChangeInventory( this, slot, InvOperation.setInventorySlotContents, removed, added );
+			if(this.te != null && Platform.isServer() )
+			{
+				this.te.onChangeInventory( this, slot, InvOperation.setStack, removed, added );
+			}
 		}
 	}
 
-	@Override
-	public String getName()
-	{
-		return "appeng-internal";
-	}
 
 	@Override
-	public boolean hasCustomName()
-	{
-		return false;
-	}
-
-	@Override
-	public int getInventoryStackLimit()
+	public int getSlotLimit( int slot )
 	{
 		return this.maxStack > 64 ? 64 : this.maxStack;
 	}
-
-	@Override
-	public void markDirty()
-	{
-		if( this.te != null && Platform.isServer() )
-		{
-			this.te.onChangeInventory( this, -1, InvOperation.markDirty, ItemStack.EMPTY, ItemStack.EMPTY );
-		}
-	}
-
-	@Override
-	public boolean isUsableByPlayer( final EntityPlayer var1 )
-	{
-		return true;
-	}
-
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return true;
-	}
-
+	
 	@Override
 	public Iterator<ItemStack> iterator()
 	{
@@ -266,50 +271,5 @@ public class AppEngInternalAEInventory implements IInventory, Iterable<ItemStack
 	public Iterator<IAEItemStack> getNewAEIterator()
 	{
 		return new AEInvIterator( this );
-	}
-
-	@Override
-	public ITextComponent getDisplayName()
-	{
-		return null;
-	}
-
-	@Override
-	public void openInventory( final EntityPlayer player )
-	{
-
-	}
-
-	@Override
-	public void closeInventory( final EntityPlayer player )
-	{
-
-	}
-
-	@Override
-	public int getField( final int id )
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField( final int id, final int value )
-	{
-
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void clear()
-	{
-		for( int x = 0; x < this.size; x++ )
-		{
-			this.setInventorySlotContents( x, ItemStack.EMPTY );
-		}
 	}
 }

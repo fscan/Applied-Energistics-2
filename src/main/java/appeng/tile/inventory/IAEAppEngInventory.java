@@ -19,8 +19,9 @@
 package appeng.tile.inventory;
 
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public interface IAEAppEngInventory
@@ -28,5 +29,5 @@ public interface IAEAppEngInventory
 
 	void saveChanges();
 
-	void onChangeInventory( IInventory inv, int slot, InvOperation mc, ItemStack removedStack, ItemStack newStack );
+	void onChangeInventory( IItemHandlerModifiable inv, int slot, InvOperation mc, ItemStack removedStack, ItemStack newStack );
 }

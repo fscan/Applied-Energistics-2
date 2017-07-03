@@ -32,7 +32,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.IncludeExclude;
@@ -182,13 +182,13 @@ public final class ItemBasicStorageCell extends AEBaseItem implements IStorageCe
 	}
 
 	@Override
-	public IInventory getUpgradesInventory( final ItemStack is )
+	public IItemHandlerModifiable getUpgradesInventory( final ItemStack is )
 	{
 		return new CellUpgrades( is, 2 );
 	}
 
 	@Override
-	public IInventory getConfigInventory( final ItemStack is )
+	public IItemHandlerModifiable getConfigInventory( final ItemStack is )
 	{
 		return new CellConfig( is );
 	}
@@ -247,8 +247,8 @@ public final class ItemBasicStorageCell extends AEBaseItem implements IStorageCe
 					}
 
 					// drop upgrades
-					final IInventory upgradesInventory = this.getUpgradesInventory( stack );
-					for( int upgradeIndex = 0; upgradeIndex < upgradesInventory.getSizeInventory(); upgradeIndex++ )
+					final IItemHandlerModifiable upgradesInventory = this.getUpgradesInventory( stack );
+					for( int upgradeIndex = 0; upgradeIndex < upgradesInventory.getSlots(); upgradeIndex++ )
 					{
 						final ItemStack upgradeStack = upgradesInventory.getStackInSlot( upgradeIndex );
 						final ItemStack leftStack = ia.addItems( upgradeStack );

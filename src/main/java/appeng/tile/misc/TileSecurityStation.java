@@ -35,7 +35,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.Settings;
@@ -77,6 +77,7 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
+import appeng.util.helpers.ItemHandlerUtil;
 import appeng.util.item.AEItemStack;
 
 
@@ -110,7 +111,7 @@ public class TileSecurityStation extends AENetworkTile implements ITerminalHost,
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 
 	}
@@ -118,7 +119,7 @@ public class TileSecurityStation extends AENetworkTile implements ITerminalHost,
 	@Override
 	public void getDrops( final World w, final BlockPos pos, final List<ItemStack> drops )
 	{
-		if( !this.getConfigSlot().isEmpty() )
+		if( !ItemHandlerUtil.isEmpty( this.getConfigSlot() ) )
 		{
 			drops.add( this.getConfigSlot().getStackInSlot( 0 ) );
 		}

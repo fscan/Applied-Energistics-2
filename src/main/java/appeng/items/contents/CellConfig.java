@@ -36,10 +36,10 @@ public class CellConfig extends AppEngInternalInventory
 		this.is = is;
 		this.readFromNBT( Platform.openNbtData( is ), "list" );
 	}
-
+	
 	@Override
-	public void markDirty()
-	{
-		this.writeToNBT( Platform.openNbtData( this.is ), "list" );
-	}
+    protected void onContentsChanged(int slot)
+    {
+		this.writeToNBT( Platform.openNbtData( this.is ), "list" );		
+    }
 }

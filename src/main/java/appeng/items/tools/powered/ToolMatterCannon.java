@@ -43,7 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -435,13 +435,13 @@ public class ToolMatterCannon extends AEBasePoweredItem implements IStorageCell
 	}
 
 	@Override
-	public IInventory getUpgradesInventory( final ItemStack is )
+	public IItemHandlerModifiable getUpgradesInventory( final ItemStack is )
 	{
 		return new CellUpgrades( is, 4 );
 	}
 
 	@Override
-	public IInventory getConfigInventory( final ItemStack is )
+	public IItemHandlerModifiable getConfigInventory( final ItemStack is )
 	{
 		return new CellConfig( is );
 	}

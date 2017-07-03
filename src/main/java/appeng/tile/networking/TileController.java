@@ -21,11 +21,6 @@ package appeng.tile.networking;
 
 import java.util.EnumSet;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.events.MENetworkControllerChange;
@@ -40,15 +35,18 @@ import appeng.block.networking.BlockController;
 import appeng.block.networking.BlockController.ControllerBlockState;
 import appeng.me.GridAccessException;
 import appeng.tile.grid.AENetworkPowerTile;
-import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 
 public class TileController extends AENetworkPowerTile
 {
-	private static final IInventory NULL_INVENTORY = new AppEngInternalInventory( null, 0 );
-	private static final int[] ACCESSIBLE_SLOTS_BY_SIDE = {};
-
 	private boolean isValid = false;
 
 	public TileController()
@@ -194,23 +192,26 @@ public class TileController extends AENetworkPowerTile
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public IItemHandlerModifiable getInternalInventory()
 	{
-		return NULL_INVENTORY;
+		return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
-
 	}
 
 	@Override
-	public int[] getAccessibleSlotsBySide( final EnumFacing whichSide )
+	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
 	{
-		return ACCESSIBLE_SLOTS_BY_SIDE;
-	}
-
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+			return false;
+		return super.hasCapability( capability, facing );
+	}	
+	
+	
+	
 	/**
 	 * Check for a controller at this coordinates as well as is it loaded.
 	 *
@@ -224,13 +225,6 @@ public class TileController extends AENetworkPowerTile
 			return this.world.getTileEntity( pos ) instanceof TileController;
 		}
 
-		return false;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

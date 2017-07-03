@@ -23,7 +23,7 @@ import java.util.List;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Upgrades;
 import appeng.api.util.IConfigManager;
@@ -59,7 +59,7 @@ public abstract class PartUpgradeable extends PartBasicState implements IAEAppEn
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 		if( inv == this.upgrades )
 		{
@@ -155,7 +155,7 @@ public abstract class PartUpgradeable extends PartBasicState implements IAEAppEn
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "upgrades" ) )
 		{

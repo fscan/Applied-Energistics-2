@@ -26,6 +26,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.AEApi;
@@ -534,13 +536,13 @@ public class CellInventory implements ICellInventory
 	}
 
 	@Override
-	public IInventory getConfigInventory()
+	public IItemHandlerModifiable getConfigInventory()
 	{
 		return this.cellType.getConfigInventory( this.i );
 	}
 
 	@Override
-	public IInventory getUpgradesInventory()
+	public IItemHandlerModifiable getUpgradesInventory()
 	{
 		return this.cellType.getUpgradesInventory( this.i );
 	}

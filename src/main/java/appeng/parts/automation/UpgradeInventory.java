@@ -24,11 +24,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IUpgradeModule;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
+import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 
@@ -47,40 +48,16 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 
 	public UpgradeInventory( final IAEAppEngInventory parent, final int s )
 	{
-		super( null, s );
+		super( null, s, 1);
 		this.setTileEntity( this );
 		this.parent = parent;
+		this.setFilter(new UpgradeInvFilter());
 	}
 
 	@Override
 	protected boolean eventsEnabled()
 	{
 		return true;
-	}
-
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return 1;
-	}
-
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		if( itemstack.isEmpty() )
-		{
-			return false;
-		}
-		final Item it = itemstack.getItem();
-		if( it instanceof IUpgradeModule )
-		{
-			final Upgrades u = ( (IUpgradeModule) it ).getType( itemstack );
-			if( u != null )
-			{
-				return this.getInstalledUpgrades( u ) < this.getMaxInstalled( u );
-			}
-		}
-		return false;
 	}
 
 	public int getInstalledUpgrades( final Upgrades u )
@@ -171,7 +148,7 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 		this.cached = false;
 		if( this.parent != null && Platform.isServer() )
@@ -179,4 +156,33 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 			this.parent.onChangeInventory( inv, slot, mc, removedStack, newStack );
 		}
 	}
+	
+	private class UpgradeInvFilter implements IAEItemFilter
+	{
+
+		@Override
+		public boolean allowExtract(IItemHandlerModifiable inv, int slot, int amount) 
+		{
+			return true;
+		}
+
+		@Override
+		public boolean allowInsert(IItemHandlerModifiable inv, int slot, ItemStack itemstack) 
+		{
+			if( itemstack.isEmpty() )
+			{
+				return false;
+			}
+			final Item it = itemstack.getItem();
+			if( it instanceof IUpgradeModule )
+			{
+				final Upgrades u = ( (IUpgradeModule) it ).getType( itemstack );
+				if( u != null )
+				{
+					return getInstalledUpgrades( u ) < getMaxInstalled( u );
+				}
+			}
+			return false;
+		}		
+	}	
 }

@@ -24,16 +24,15 @@
 package appeng.api.implementations.guiobjects;
 
 
-import net.minecraft.inventory.IInventory;
-
 import appeng.api.networking.IGridHost;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.IItemHandler;
 
 
 /**
  * Obtained via {@link IGuiItem} getGuiObject
  */
-public interface INetworkTool extends IInventory, IGuiItemObject
+public interface INetworkTool extends IGuiItemObject, ICapabilityProvider
 {
-
 	IGridHost getGridHost(); // null for most purposes.
 }

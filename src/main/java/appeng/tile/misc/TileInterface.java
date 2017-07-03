@@ -37,7 +37,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
@@ -219,7 +219,7 @@ public class TileInterface extends AENetworkInvTile implements IGridTickable, II
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		return this.duality.getInventoryByName( name );
 	}
@@ -237,21 +237,15 @@ public class TileInterface extends AENetworkInvTile implements IGridTickable, II
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public IItemHandlerModifiable getInternalInventory()
 	{
 		return this.duality.getInternalInventory();
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
 		this.duality.onChangeInventory( inv, slot, mc, removed, added );
-	}
-
-	@Override
-	public int[] getAccessibleSlotsBySide( final EnumFacing side )
-	{
-		return this.duality.getSlotsForFace( side );
 	}
 
 	@Override
@@ -360,12 +354,5 @@ public class TileInterface extends AENetworkInvTile implements IGridTickable, II
 			return result;
 		}
 		return super.getCapability( capability, facing );
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

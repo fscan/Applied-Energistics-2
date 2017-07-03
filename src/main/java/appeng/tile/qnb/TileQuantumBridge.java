@@ -31,7 +31,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 import appeng.api.AEApi;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.networking.GridFlags;
@@ -56,8 +60,6 @@ import appeng.util.Platform;
 public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock, ITickable
 {
 	private final byte corner = 16;
-	private final int[] sidesRing = {};
-	private final int[] sidesLink = { 0 };
 	private final AppEngInternalInventory internalInventory = new AppEngInternalInventory( this, 1 );
 	private final byte hasSingularity = 32;
 	private final byte powered = 64;
@@ -94,7 +96,7 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	{
 		int out = this.constructed;
 
-		if( !this.getStackInSlot( 0 ).isEmpty() && this.constructed != -1 )
+		if( !internalInventory.getStackInSlot( 0 ).isEmpty() && this.constructed != -1 )
 		{
 			out |= this.hasSingularity;
 		}
@@ -116,13 +118,13 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public IItemHandlerModifiable getInternalInventory()
 	{
 		return this.internalInventory;
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
 		if( this.cluster != null )
 		{
@@ -131,15 +133,24 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	}
 
 	@Override
-	public int[] getAccessibleSlotsBySide( final EnumFacing side )
+	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
+	{
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+			return this.isCenter();
+			
+		return super.hasCapability( capability, facing );
+	}
+	
+	@Override
+	protected IItemHandler getItemHandlerForSide(EnumFacing side)
 	{
 		if( this.isCenter() )
 		{
-			return this.sidesLink;
+			return this.internalInventory;
 		}
-		return this.sidesRing;
+		return EmptyHandler.INSTANCE;
 	}
-
+	
 	private boolean isCenter()
 	{
 		return AEApi.instance().definitions().blocks().quantumLink().maybeBlock()
@@ -344,12 +355,5 @@ public class TileQuantumBridge extends AENetworkInvTile implements IAEMultiBlock
 	public byte getCorner()
 	{
 		return this.corner;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

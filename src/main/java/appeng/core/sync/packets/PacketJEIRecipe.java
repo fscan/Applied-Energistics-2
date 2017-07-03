@@ -38,6 +38,8 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.config.Actionable;
@@ -128,8 +130,8 @@ public class PacketJEIRecipe extends AppEngPacket
 				final IStorageGrid inv = grid.getCache( IStorageGrid.class );
 				final IEnergyGrid energy = grid.getCache( IEnergyGrid.class );
 				final ISecurityGrid security = grid.getCache( ISecurityGrid.class );
-				final IInventory craftMatrix = cct.getInventoryByName( "crafting" );
-				final IInventory playerInventory = cct.getInventoryByName( "player" );
+				final IItemHandlerModifiable craftMatrix = cct.getInventoryByName( "crafting" );
+				final IItemHandlerModifiable playerInventory = cct.getInventoryByName( "player" );
 
 				final Actionable realForFake = cct.useRealItems() ? Actionable.MODULATE : Actionable.SIMULATE;
 
@@ -156,7 +158,7 @@ public class PacketJEIRecipe extends AppEngPacket
 							final IItemList all = storage.getStorageList();
 							final IPartitionList<IAEItemStack> filter = ItemViewCell.createFilter( cct.getViewCells() );
 
-							for( int x = 0; x < craftMatrix.getSizeInventory(); x++ )
+							for( int x = 0; x < craftMatrix.getSlots(); x++ )
 							{
 								final ItemStack patternItem = testInv.getStackInSlot( x );
 
@@ -175,11 +177,11 @@ public class PacketJEIRecipe extends AppEngPacket
 											final IAEItemStack out = realForFake == Actionable.SIMULATE ? null : Platform.poweredInsert( energy, storage, in, cct.getActionSource() );
 											if( out != null )
 											{
-												craftMatrix.setInventorySlotContents( x, out.getItemStack() );
+												craftMatrix.setStackInSlot( x, out.getItemStack() );
 											}
 											else
 											{
-												craftMatrix.setInventorySlotContents( x, ItemStack.EMPTY );
+												craftMatrix.setStackInSlot( x, ItemStack.EMPTY );
 											}
 
 											currentItem = craftMatrix.getStackInSlot( x );
@@ -222,10 +224,11 @@ public class PacketJEIRecipe extends AppEngPacket
 										whichItem = this.extractItemFromPlayerInventory( player, realForFake, patternItem );
 									}
 
-									craftMatrix.setInventorySlotContents( x, whichItem );
+									craftMatrix.setStackInSlot( x, whichItem );
 								}
 							}
-							con.onCraftMatrixChanged( craftMatrix );
+							//TODO: is this ok? parameter seems to only be used by enchanting table
+							con.onCraftMatrixChanged(null);
 						}
 					}
 				}

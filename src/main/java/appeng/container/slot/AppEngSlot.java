@@ -23,12 +23,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import appeng.container.AEBaseContainer;
 import appeng.tile.inventory.AppEngInternalInventory;
 
 
-public class AppEngSlot extends Slot
+public class AppEngSlot extends SlotItemHandler
 {
 
 	private final int defX;
@@ -40,7 +41,7 @@ public class AppEngSlot extends Slot
 	private hasCalculatedValidness isValid;
 	private boolean isDisplay = false;
 
-	public AppEngSlot( final IInventory inv, final int idx, final int x, final int y )
+	public AppEngSlot( final IItemHandler inv, final int idx, final int x, final int y )
 	{
 		super( inv, idx, x, y );
 		this.defX = x;
@@ -88,7 +89,7 @@ public class AppEngSlot extends Slot
 			return ItemStack.EMPTY;
 		}
 
-		if( this.inventory.getSizeInventory() <= this.getSlotIndex() )
+		if( this.getItemHandler().getSlots() <= this.getSlotIndex() )
 		{
 			return ItemStack.EMPTY;
 		}
@@ -118,15 +119,14 @@ public class AppEngSlot extends Slot
 	@Override
 	public void onSlotChanged()
 	{
-		if( this.inventory instanceof AppEngInternalInventory )
+		//TODO: should not be needed
+		/*
+		if( this.getItemHandler() instanceof AppEngInternalInventory )
 		{
-			( (AppEngInternalInventory) this.inventory ).markDirty( this.getSlotIndex() );
+			( (AppEngInternalInventory) this.getItemHandler() ).markDirty( this.getSlotIndex() );
 		}
-		else
-		{
-			super.onSlotChanged();
-		}
-
+	    */
+		super.onSlotChanged();
 		this.setIsValid( hasCalculatedValidness.NotAvailable );
 	}
 

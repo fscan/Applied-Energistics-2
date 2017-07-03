@@ -50,6 +50,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.config.Upgrades;
@@ -287,7 +288,7 @@ public final class ItemMaterial extends AEBaseItem implements IStorageComponent,
 		if( player.isSneaking() )
 		{
 			final TileEntity te = world.getTileEntity( pos );
-			IInventory upgrades = null;
+			IItemHandler upgrades = null;
 
 			if( te instanceof IPartHost )
 			{

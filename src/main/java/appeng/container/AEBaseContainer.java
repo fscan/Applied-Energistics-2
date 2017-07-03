@@ -41,7 +41,10 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.SecurityPermissions;
@@ -117,6 +120,19 @@ public abstract class AEBaseContainer extends Container
 		this.prepareSync();
 	}
 
+	@Override
+	public void onCraftMatrixChanged( final IInventory par1IInventory )
+	{
+		this.onCraftMatrixChanged();
+	}
+
+	//TODO: this is the only thing the base class does, is this even needed? 
+	public void onCraftMatrixChanged()
+	{
+		this.detectAndSendChanges();
+	}
+	
+	
 	protected IActionHost getActionHost()
 	{
 		if( this.obj instanceof IActionHost )
@@ -386,6 +402,8 @@ public abstract class AEBaseContainer extends Container
 
 	protected void bindPlayerInventory( final InventoryPlayer inventoryPlayer, final int offsetX, final int offsetY )
 	{
+		IItemHandler ih = new PlayerInvWrapper(inventoryPlayer);
+		
 		// bind player inventory
 		for( int i = 0; i < 3; i++ )
 		{
@@ -393,11 +411,11 @@ public abstract class AEBaseContainer extends Container
 			{
 				if( this.locked.contains( j + i * 9 + 9 ) )
 				{
-					this.addSlotToContainer( new SlotDisabled( inventoryPlayer, j + i * 9 + 9, 8 + j * 18 + offsetX, offsetY + i * 18 ) );
+					this.addSlotToContainer( new SlotDisabled( ih, j + i * 9 + 9, 8 + j * 18 + offsetX, offsetY + i * 18 ) );
 				}
 				else
 				{
-					this.addSlotToContainer( new SlotPlayerInv( inventoryPlayer, j + i * 9 + 9, 8 + j * 18 + offsetX, offsetY + i * 18 ) );
+					this.addSlotToContainer( new SlotPlayerInv( ih, j + i * 9 + 9, 8 + j * 18 + offsetX, offsetY + i * 18 ) );
 				}
 			}
 		}
@@ -407,11 +425,11 @@ public abstract class AEBaseContainer extends Container
 		{
 			if( this.locked.contains( i ) )
 			{
-				this.addSlotToContainer( new SlotDisabled( inventoryPlayer, i, 8 + i * 18 + offsetX, 58 + offsetY ) );
+				this.addSlotToContainer( new SlotDisabled( ih, i, 8 + i * 18 + offsetX, 58 + offsetY ) );
 			}
 			else
 			{
-				this.addSlotToContainer( new SlotPlayerHotBar( inventoryPlayer, i, 8 + i * 18 + offsetX, 58 + offsetY ) );
+				this.addSlotToContainer( new SlotPlayerHotBar( ih, i, 8 + i * 18 + offsetX, 58 + offsetY ) );
 			}
 		}
 	}

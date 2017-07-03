@@ -24,7 +24,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.ContainerNull;
 import appeng.container.slot.SlotCraftingMatrix;
@@ -49,7 +51,7 @@ public class ContainerCraftingTerm extends ContainerMEMonitorable implements IAE
 		super( ip, monitorable, false );
 		this.ct = (PartCraftingTerminal) monitorable;
 
-		final IInventory crafting = this.ct.getInventoryByName( "crafting" );
+		final IItemHandlerModifiable crafting = this.ct.getInventoryByName( "crafting" );
 
 		for( int y = 0; y < 3; y++ )
 		{
@@ -63,14 +65,15 @@ public class ContainerCraftingTerm extends ContainerMEMonitorable implements IAE
 
 		this.bindPlayerInventory( ip, 0, 0 );
 
-		this.onCraftMatrixChanged( crafting );
+		this.onCraftMatrixChanged();
 	}
 
 	/**
 	 * Callback for when the crafting matrix is changed.
 	 */
+	
 	@Override
-	public void onCraftMatrixChanged( final IInventory par1IInventory )
+	public void onCraftMatrixChanged()
 	{
 		final ContainerNull cn = new ContainerNull();
 		final InventoryCrafting ic = new InventoryCrafting( cn, 3, 3 );
@@ -81,6 +84,7 @@ public class ContainerCraftingTerm extends ContainerMEMonitorable implements IAE
 		}
 
 		this.outputSlot.putStack( CraftingManager.getInstance().findMatchingRecipe( ic, this.getPlayerInv().player.world ) );
+		super.onCraftMatrixChanged();
 	}
 
 	@Override
@@ -90,17 +94,17 @@ public class ContainerCraftingTerm extends ContainerMEMonitorable implements IAE
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "player" ) )
 		{
-			return this.getInventoryPlayer();
+			return new PlayerInvWrapper(this.getInventoryPlayer());
 		}
 		return this.ct.getInventoryByName( name );
 	}

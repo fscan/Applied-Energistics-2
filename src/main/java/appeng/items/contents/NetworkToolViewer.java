@@ -18,19 +18,22 @@
 
 package appeng.items.contents;
 
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-
 import appeng.api.implementations.guiobjects.INetworkTool;
 import appeng.api.implementations.items.IUpgradeModule;
 import appeng.api.networking.IGridHost;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.IAEAppEngInventory;
+import appeng.tile.inventory.IAEItemFilter;
+import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
-public class NetworkToolViewer implements INetworkTool
+public class NetworkToolViewer implements INetworkTool, IAEAppEngInventory
 {
 
 	private final AppEngInternalInventory inv;
@@ -41,92 +44,27 @@ public class NetworkToolViewer implements INetworkTool
 	{
 		this.is = is;
 		this.gh = gHost;
-		this.inv = new AppEngInternalInventory( null, 9 );
+		this.inv = new AppEngInternalInventory( this, 9 );
+		this.inv.setFilter(new NetworkToolInventoryFilter());
 		if( is.hasTagCompound() ) // prevent crash when opening network status screen.
 		{
 			this.inv.readFromNBT( Platform.openNbtData( is ), "inv" );
 		}
 	}
-
+	
 	@Override
-	public int getSizeInventory()
+	public void saveChanges() 
 	{
-		return this.inv.getSizeInventory();
+		//TODO: should not be needed
+		//inv.markDirty();
 	}
-
+	
 	@Override
-	public ItemStack getStackInSlot( final int i )
+	public void onChangeInventory(IItemHandlerModifiable inv, int slot, InvOperation mc, ItemStack removedStack, ItemStack newStack) 	
 	{
-		return this.inv.getStackInSlot( i );
-	}
-
-	@Override
-	public ItemStack decrStackSize( final int i, final int j )
-	{
-		return this.inv.decrStackSize( i, j );
-	}
-
-	@Override
-	public ItemStack removeStackFromSlot( int i )
-	{
-		return this.inv.removeStackFromSlot( i );
-	}
-
-	@Override
-	public void setInventorySlotContents( final int i, final ItemStack itemstack )
-	{
-		this.inv.setInventorySlotContents( i, itemstack );
-	}
-
-	@Override
-	public String getName()
-	{
-		return this.inv.getName();
-	}
-
-	@Override
-	public boolean hasCustomName()
-	{
-		return this.inv.hasCustomName();
-	}
-
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return this.inv.getInventoryStackLimit();
-	}
-
-	@Override
-	public void markDirty()
-	{
-		this.inv.markDirty();
 		this.inv.writeToNBT( Platform.openNbtData( this.is ), "inv" );
 	}
-
-	@Override
-	public boolean isUsableByPlayer( final EntityPlayer entityplayer )
-	{
-		return this.inv.isUsableByPlayer( entityplayer );
-	}
-
-	@Override
-	public void openInventory( final EntityPlayer player )
-	{
-		this.inv.openInventory( player );
-	}
-
-	@Override
-	public void closeInventory( final EntityPlayer player )
-	{
-		this.inv.closeInventory( player );
-	}
-
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return this.inv.isItemValidForSlot( i, itemstack ) && itemstack.getItem() instanceof IUpgradeModule && ( (IUpgradeModule) itemstack.getItem() ).getType( itemstack ) != null;
-	}
-
+	
 	@Override
 	public ItemStack getItemStack()
 	{
@@ -138,40 +76,41 @@ public class NetworkToolViewer implements INetworkTool
 	{
 		return this.gh;
 	}
-
-	@Override
-	public int getField( final int id )
+	
+	private static class NetworkToolInventoryFilter implements IAEItemFilter
 	{
-		return this.inv.getField( id );
+		@Override
+		public boolean allowExtract(IItemHandlerModifiable inv, int slot, int amount) 
+		{
+			return true;
+		}
+
+		@Override
+		public boolean allowInsert(IItemHandlerModifiable inv, int slot, ItemStack stack) 
+		{
+			return  stack.getItem() instanceof IUpgradeModule && ( (IUpgradeModule) stack.getItem() ).getType( stack ) != null;
+		}
+	}
+	
+	public IItemHandlerModifiable getInternalInventory()
+	{
+		return inv;
 	}
 
 	@Override
-	public void setField( final int id, final int value )
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) 
 	{
-		this.inv.setField( id, value );
-	}
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
+	}	
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public int getFieldCount()
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) 
 	{
-		return this.inv.getFieldCount();
-	}
-
-	@Override
-	public void clear()
-	{
-		this.inv.clear();
-	}
-
-	@Override
-	public ITextComponent getDisplayName()
-	{
-		return this.inv.getDisplayName();
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		return false;
-	}
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+		{
+			return (T) this.inv;
+		}
+		return null;
+	}	
 }

@@ -26,7 +26,7 @@ import appeng.api.storage.StorageChannel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.ICellWorkbenchItem;
 import appeng.items.AEBaseItem;
@@ -49,13 +49,13 @@ public class ItemCreativeStorageCell extends AEBaseItem implements ICellWorkbenc
 	}
 
 	@Override
-	public IInventory getUpgradesInventory( final ItemStack is )
+	public IItemHandlerModifiable getUpgradesInventory( final ItemStack is )
 	{
 		return null;
 	}
 
 	@Override
-	public IInventory getConfigInventory( final ItemStack is )
+	public IItemHandlerModifiable getConfigInventory( final ItemStack is )
 	{
 		return new CellConfig( is );
 	}

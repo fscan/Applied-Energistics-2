@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.guiobjects.IGuiItem;
@@ -150,13 +150,13 @@ public class ToolPortableCell extends AEBasePoweredItem implements IStorageCell,
 	}
 
 	@Override
-	public IInventory getUpgradesInventory( final ItemStack is )
+	public IItemHandlerModifiable getUpgradesInventory( final ItemStack is )
 	{
 		return new CellUpgrades( is, 2 );
 	}
 
 	@Override
-	public IInventory getConfigInventory( final ItemStack is )
+	public IItemHandlerModifiable getConfigInventory( final ItemStack is )
 	{
 		return new CellConfig( is );
 	}

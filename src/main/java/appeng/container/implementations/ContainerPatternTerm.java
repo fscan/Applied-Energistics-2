@@ -38,7 +38,9 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.definitions.IDefinitions;
@@ -65,6 +67,7 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.AdaptorPlayerHand;
+import appeng.util.inv.WrapperInvItemHandler;
 import appeng.util.item.AEItemStack;
 
 
@@ -73,7 +76,7 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 
 	private final PartPatternTerminal patternTerminal;
 	private final AppEngInternalInventory cOut = new AppEngInternalInventory( null, 1 );
-	private final IInventory crafting;
+	private final IItemHandlerModifiable crafting;
 	private final SlotFakeCraftingMatrix[] craftingSlots = new SlotFakeCraftingMatrix[9];
 	private final OptionalSlotFake[] outputSlots = new OptionalSlotFake[3];
 	private final SlotPatternTerm craftSlot;
@@ -89,8 +92,8 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 		super( ip, monitorable, false );
 		this.patternTerminal = (PartPatternTerminal) monitorable;
 
-		final IInventory patternInv = this.getPatternTerminal().getInventoryByName( "pattern" );
-		final IInventory output = this.getPatternTerminal().getInventoryByName( "output" );
+		final IItemHandlerModifiable patternInv = this.getPatternTerminal().getInventoryByName( "pattern" );
+		final IItemHandlerModifiable output = this.getPatternTerminal().getInventoryByName( "output" );
 
 		this.crafting = this.getPatternTerminal().getInventoryByName( "crafting" );
 
@@ -160,7 +163,7 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 		}
 
 		final ItemStack is = CraftingManager.getInstance().findMatchingRecipe( ic, this.getPlayerInv().player.world );
-		this.cOut.setInventorySlotContents( 0, is );
+		this.cOut.setStackInSlot( 0, is );
 		return is;
 	}
 
@@ -171,7 +174,7 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 
 	}
@@ -409,7 +412,7 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 
 			if( rr == r && Platform.itemComparisons().isSameItem( rr.getCraftingResult( real ), is ) )
 			{
-				final SlotCrafting sc = new SlotCrafting( p, real, this.cOut, 0, 0, 0 );
+				final SlotCrafting sc = new SlotCrafting( p, real, new WrapperInvItemHandler(this.cOut), 0, 0, 0 );
 				sc.onTake( p, is );
 
 				for( int x = 0; x < real.getSizeInventory(); x++ )
@@ -511,11 +514,11 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "player" ) )
 		{
-			return this.getInventoryPlayer();
+			return new PlayerInvWrapper(this.getInventoryPlayer());
 		}
 		return this.getPatternTerminal().getInventoryByName( name );
 	}

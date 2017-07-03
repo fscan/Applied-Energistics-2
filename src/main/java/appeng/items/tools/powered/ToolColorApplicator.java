@@ -45,6 +45,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.AEApi;
@@ -510,13 +511,13 @@ public class ToolColorApplicator extends AEBasePoweredItem implements IStorageCe
 	}
 
 	@Override
-	public IInventory getUpgradesInventory( final ItemStack is )
+	public IItemHandlerModifiable getUpgradesInventory( final ItemStack is )
 	{
 		return new CellUpgrades( is, 2 );
 	}
 
 	@Override
-	public IInventory getConfigInventory( final ItemStack is )
+	public IItemHandlerModifiable getConfigInventory( final ItemStack is )
 	{
 		return new CellConfig( is );
 	}

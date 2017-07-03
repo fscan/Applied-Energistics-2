@@ -24,7 +24,8 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.networking.energy.IEnergySource;
 import appeng.api.networking.security.BaseActionSource;
@@ -40,7 +41,7 @@ public class SlotPatternTerm extends SlotCraftingTerm
 	private final int groupNum;
 	private final IOptionalSlotHost host;
 
-	public SlotPatternTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IInventory cMatrix, final IInventory secondMatrix, final IInventory output, final int x, final int y, final IOptionalSlotHost h, final int groupNumber, final IContainerCraftingPacket c )
+	public SlotPatternTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IItemHandlerModifiable cMatrix, final IItemHandlerModifiable secondMatrix, final IItemHandler output, final int x, final int y, final IOptionalSlotHost h, final int groupNumber, final IContainerCraftingPacket c )
 	{
 		super( player, mySrc, energySrc, storage, cMatrix, secondMatrix, output, x, y, c );
 

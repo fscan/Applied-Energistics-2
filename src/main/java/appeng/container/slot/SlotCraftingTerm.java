@@ -30,7 +30,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.math.BlockPos;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Actionable;
 import appeng.api.networking.energy.IEnergySource;
 import appeng.api.networking.security.BaseActionSource;
@@ -51,15 +52,15 @@ import appeng.util.item.AEItemStack;
 public class SlotCraftingTerm extends AppEngCraftingSlot
 {
 
-	private final IInventory craftInv;
-	private final IInventory pattern;
+	private final IItemHandlerModifiable craftInv;
+	private final IItemHandlerModifiable pattern;
 
 	private final BaseActionSource mySrc;
 	private final IEnergySource energySrc;
 	private final IStorageMonitorable storage;
 	private final IContainerCraftingPacket container;
 
-	public SlotCraftingTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IInventory cMatrix, final IInventory secondMatrix, final IInventory output, final int x, final int y, final IContainerCraftingPacket ccp )
+	public SlotCraftingTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IItemHandlerModifiable cMatrix, final IItemHandlerModifiable secondMatrix, final IItemHandler output, final int x, final int y, final IContainerCraftingPacket ccp )
 	{
 		super( player, cMatrix, output, 0, x, y );
 		this.energySrc = energySrc;
@@ -70,7 +71,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 		this.container = ccp;
 	}
 
-	public IInventory getCraftingMatrix()
+	public IItemHandler getCraftingMatrix()
 	{
 		return this.craftInv;
 	}
@@ -162,7 +163,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 
 		if( !is.isEmpty() && Platform.itemComparisons().isEqualItem( request, is ) )
 		{
-			final ItemStack[] set = new ItemStack[this.getPattern().getSizeInventory()];
+			final ItemStack[] set = new ItemStack[this.getPattern().getSlots()];
 			// Safeguard for empty slots in the inventory for now
 			Arrays.fill(set, ItemStack.EMPTY);
 
@@ -199,7 +200,8 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 						{
 							super.onTake( p, is );
 							// actually necessary to cleanup this case...
-							p.openContainer.onCraftMatrixChanged( this.craftInv );
+							//TODO: is this ok? parameter seems to only be used by enchanting table
+							p.openContainer.onCraftMatrixChanged( null );
 							return request;
 						}
 					}
@@ -210,7 +212,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 
 				if( inv != null )
 				{
-					for( int x = 0; x < this.getPattern().getSizeInventory(); x++ )
+					for( int x = 0; x < this.getPattern().getSlots(); x++ )
 					{
 						if( !this.getPattern().getStackInSlot( x ).isEmpty() )
 						{
@@ -229,7 +231,8 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 			}
 
 			// shouldn't be necessary...
-			p.openContainer.onCraftMatrixChanged( this.craftInv );
+			//TODO: is this ok? parameter seems to only be used by enchanting table
+			p.openContainer.onCraftMatrixChanged( null );
 
 			return is;
 		}
@@ -255,11 +258,11 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 		if( Platform.isServer() )
 		{
 			// set new items onto the crafting table...
-			for( int x = 0; x < this.craftInv.getSizeInventory(); x++ )
+			for( int x = 0; x < this.craftInv.getSlots(); x++ )
 			{
 				if( this.craftInv.getStackInSlot( x ).isEmpty() )
 				{
-					this.craftInv.setInventorySlotContents( x, set[x] );
+					this.craftInv.setStackInSlot( x, set[x] );
 				}
 				else if( !set[x].isEmpty() )
 				{
@@ -279,7 +282,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 		}
 	}
 
-	IInventory getPattern()
+	IItemHandlerModifiable getPattern()
 	{
 		return this.pattern;
 	}

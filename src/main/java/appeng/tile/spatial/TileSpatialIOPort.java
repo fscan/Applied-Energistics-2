@@ -18,13 +18,10 @@
 
 package appeng.tile.spatial;
 
-
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.YesNo;
@@ -45,6 +42,7 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.IWorldCallable;
 import appeng.util.Platform;
@@ -53,13 +51,13 @@ import appeng.util.Platform;
 public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallable<Void>
 {
 
-	private final int[] sides = { 0, 1 };
 	private final AppEngInternalInventory inv = new AppEngInternalInventory( this, 2 );
 	private YesNo lastRedstoneState = YesNo.UNDECIDED;
 
 	public TileSpatialIOPort()
 	{
 		this.getProxy().setFlags( GridFlags.REQUIRE_CHANNEL );
+		inv.setFilter(new SpatialIOFilter());
 	}
 
 	@TileEvent( TileEventType.WORLD_NBT_WRITE )
@@ -104,7 +102,7 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	{
 		if( Platform.isServer() )
 		{
-			final ItemStack cell = this.getStackInSlot( 0 );
+			final ItemStack cell = this.inv.getStackInSlot( 0 );
 			if( this.isSpatialCell( cell ) )
 			{
 				TickHandler.INSTANCE.addCallable( null, this );// this needs to be cross world synced.
@@ -125,8 +123,8 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	@Override
 	public Void call( final World world ) throws Exception
 	{
-		final ItemStack cell = this.getStackInSlot( 0 );
-		if( this.isSpatialCell( cell ) && this.getStackInSlot( 1 ).isEmpty() )
+		final ItemStack cell = this.inv.getStackInSlot( 0 );
+		if( this.isSpatialCell( cell ) && this.inv.getStackInSlot( 1 ).isEmpty() )
 		{
 			final IGrid gi = this.getProxy().getGrid();
 			final IEnergyGrid energy = this.getProxy().getEnergy();
@@ -147,8 +145,8 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 						if( tr.success )
 						{
 							energy.extractAEPower( req, Actionable.MODULATE, PowerMultiplier.CONFIG );
-							this.setInventorySlotContents( 0, ItemStack.EMPTY );
-							this.setInventorySlotContents( 1, cell );
+							this.inv.setStackInSlot( 0, ItemStack.EMPTY );
+							this.inv.setStackInSlot( 1, cell );
 						}
 					}
 				}
@@ -171,45 +169,30 @@ public class TileSpatialIOPort extends AENetworkInvTile implements IWorldCallabl
 	}
 
 	@Override
-	public IInventory getInternalInventory()
+	public IItemHandlerModifiable getInternalInventory()
 	{
 		return this.inv;
 	}
 
 	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return( i == 0 && this.isSpatialCell( itemstack ) );
-	}
-
-	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
 
 	}
-
-	@Override
-	public boolean canInsertItem( final int slotIndex, final ItemStack insertingItem, final EnumFacing side )
+	
+	private class SpatialIOFilter implements IAEItemFilter
 	{
-		return this.isItemValidForSlot( slotIndex, insertingItem );
-	}
+		@Override
+		public boolean allowExtract(IItemHandlerModifiable inv, int slot, int amount) 
+		{
+			return slot == 1;
+		}
 
-	@Override
-	public boolean canExtractItem( final int slotIndex, final ItemStack extractedItem, final EnumFacing side )
-	{
-		return slotIndex == 1;
-	}
-
-	@Override
-	public int[] getAccessibleSlotsBySide( final EnumFacing side )
-	{
-		return this.sides;
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+		@Override
+		public boolean allowInsert(IItemHandlerModifiable inv, int slot, ItemStack stack) 
+		{
+			return( slot == 0 &&  TileSpatialIOPort.this.isSpatialCell( stack ) );
+		}
+		
+	}	
 }

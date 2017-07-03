@@ -45,7 +45,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.implementations.tiles.ISegmentedInventory;
 import appeng.api.util.ICommonTile;
 import appeng.api.util.IConfigManager;
@@ -508,15 +508,15 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 
 		if( this instanceof ISegmentedInventory )
 		{
-			final IInventory inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
+			final IItemHandlerModifiable inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
 			if( inv instanceof AppEngInternalAEInventory )
 			{
 				final AppEngInternalAEInventory target = (AppEngInternalAEInventory) inv;
-				final AppEngInternalAEInventory tmp = new AppEngInternalAEInventory( null, target.getSizeInventory() );
+				final AppEngInternalAEInventory tmp = new AppEngInternalAEInventory( null, target.getSlots());
 				tmp.readFromNBT( compound, "config" );
-				for( int x = 0; x < tmp.getSizeInventory(); x++ )
+				for( int x = 0; x < tmp.getSlots(); x++ )
 				{
-					target.setInventorySlotContents( x, tmp.getStackInSlot( x ) );
+					target.setStackInSlot( x, tmp.getStackInSlot( x ) );
 				}
 			}
 		}
@@ -594,7 +594,7 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 
 		if( this instanceof ISegmentedInventory )
 		{
-			final IInventory inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
+			final IItemHandlerModifiable inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
 			if( inv instanceof AppEngInternalAEInventory )
 			{
 				( (AppEngInternalAEInventory) inv ).writeToNBT( output, "config" );

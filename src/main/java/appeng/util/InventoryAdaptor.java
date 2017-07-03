@@ -56,6 +56,11 @@ public abstract class InventoryAdaptor implements Iterable<ItemSlot>
 			return null;
 		}
 
+		if ( te instanceof IItemHandler)
+		{
+			return new AdaptorItemHandler( (IItemHandler) te );			
+		}
+		
 		if ( te instanceof ICapabilityProvider )
 		{
 			ICapabilityProvider capProvider = (ICapabilityProvider) te;

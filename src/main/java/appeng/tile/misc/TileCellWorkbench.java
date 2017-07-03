@@ -26,7 +26,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.CopyMode;
 import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
@@ -51,8 +52,8 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 	private final AppEngInternalAEInventory config = new AppEngInternalAEInventory( this, 63 );
 	private final ConfigManager manager = new ConfigManager( this );
 
-	private IInventory cacheUpgrades = null;
-	private IInventory cacheConfig = null;
+	private IItemHandlerModifiable cacheUpgrades = null;
+	private IItemHandlerModifiable cacheConfig = null;
 	private boolean locked = false;
 
 	public TileCellWorkbench()
@@ -61,7 +62,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		this.cell.setEnableClientEvents( true );
 	}
 
-	public IInventory getCellUpgradeInventory()
+	public IItemHandlerModifiable getCellUpgradeInventory()
 	{
 		if( this.cacheUpgrades == null )
 		{
@@ -77,7 +78,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IInventory inv = cell.getUpgradesInventory( is );
+			final IItemHandlerModifiable inv = cell.getUpgradesInventory( is );
 			if( inv == null )
 			{
 				return null;
@@ -120,7 +121,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "config" ) )
 		{
@@ -142,7 +143,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 		if( inv == this.cell && !this.locked )
 		{
@@ -151,11 +152,11 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 			this.cacheUpgrades = null;
 			this.cacheConfig = null;
 
-			final IInventory configInventory = this.getCellConfigInventory();
+			final IItemHandlerModifiable configInventory = this.getCellConfigInventory();
 			if( configInventory != null )
 			{
 				boolean cellHasConfig = false;
-				for( int x = 0; x < configInventory.getSizeInventory(); x++ )
+				for( int x = 0; x < configInventory.getSlots(); x++ )
 				{
 					if( !configInventory.getStackInSlot( x ).isEmpty() )
 					{
@@ -166,26 +167,27 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 
 				if( cellHasConfig )
 				{
-					for( int x = 0; x < this.config.getSizeInventory(); x++ )
+					for( int x = 0; x < this.config.getSlots(); x++ )
 					{
-						this.config.setInventorySlotContents( x, configInventory.getStackInSlot( x ) );
+						this.config.setStackInSlot( x, configInventory.getStackInSlot( x ) );
 					}
 				}
 				else
 				{
-					for( int x = 0; x < this.config.getSizeInventory(); x++ )
+					for( int x = 0; x < this.config.getSlots(); x++ )
 					{
-						configInventory.setInventorySlotContents( x, this.config.getStackInSlot( x ) );
+						configInventory.setStackInSlot( x, this.config.getStackInSlot( x ) );
 					}
 
-					configInventory.markDirty();
+					//TODO: should not be needed anymore
+					//configInventory.markDirty();
 				}
 			}
 			else if( this.manager.getSetting( Settings.COPY_MODE ) == CopyMode.CLEAR_ON_REMOVE )
 			{
-				for( int x = 0; x < this.config.getSizeInventory(); x++ )
+				for( int x = 0; x < this.config.getSlots(); x++ )
 				{
-					this.config.setInventorySlotContents( x, ItemStack.EMPTY );
+					this.config.setStackInSlot( x, ItemStack.EMPTY );
 				}
 
 				this.markDirty();
@@ -195,20 +197,21 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		}
 		else if( inv == this.config && !this.locked )
 		{
-			final IInventory c = this.getCellConfigInventory();
+			final IItemHandlerModifiable c = this.getCellConfigInventory();
 			if( c != null )
 			{
-				for( int x = 0; x < this.config.getSizeInventory(); x++ )
+				for( int x = 0; x < this.config.getSlots(); x++ )
 				{
-					c.setInventorySlotContents( x, this.config.getStackInSlot( x ) );
+					c.setStackInSlot( x, this.config.getStackInSlot( x ) );
 				}
 
-				c.markDirty();
+				//TODO: should not be needed anymore
+				//c.markDirty();
 			}
 		}
 	}
 
-	private IInventory getCellConfigInventory()
+	private IItemHandlerModifiable getCellConfigInventory()
 	{
 		if( this.cacheConfig == null )
 		{
@@ -224,7 +227,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IInventory inv = cell.getConfigInventory( is );
+			final IItemHandlerModifiable inv = cell.getConfigInventory( is );
 			if( inv == null )
 			{
 				return null;

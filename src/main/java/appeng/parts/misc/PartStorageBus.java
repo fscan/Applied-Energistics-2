@@ -34,7 +34,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.FuzzyMode;
@@ -171,7 +171,7 @@ public class PartStorageBus extends PartUpgradeable implements IGridTickable, IC
 	}
 
 	@Override
-	public void onChangeInventory( final IInventory inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
+	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{
 		super.onChangeInventory( inv, slot, mc, removedStack, newStack );
 
@@ -205,7 +205,7 @@ public class PartStorageBus extends PartUpgradeable implements IGridTickable, IC
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "config" ) )
 		{
@@ -450,7 +450,7 @@ public class PartStorageBus extends PartUpgradeable implements IGridTickable, IC
 				final IItemList<IAEItemStack> priorityList = AEApi.instance().storage().createItemList();
 
 				final int slotsToUse = 18 + this.getInstalledUpgrades( Upgrades.CAPACITY ) * 9;
-				for( int x = 0; x < this.Config.getSizeInventory() && x < slotsToUse; x++ )
+				for( int x = 0; x < this.Config.getSlots() && x < slotsToUse; x++ )
 				{
 					final IAEItemStack is = this.Config.getAEStackInSlot( x );
 					if( is != null )

@@ -26,7 +26,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.parts.IPartModel;
 import appeng.core.AppEng;
 import appeng.core.sync.GuiBridge;
@@ -105,7 +105,7 @@ public class PartCraftingTerminal extends AbstractPartTerminal
 	}
 
 	@Override
-	public IInventory getInventoryByName( final String name )
+	public IItemHandlerModifiable getInventoryByName( final String name )
 	{
 		if( name.equals( "crafting" ) )
 		{

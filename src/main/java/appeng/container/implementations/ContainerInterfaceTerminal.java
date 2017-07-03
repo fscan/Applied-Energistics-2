@@ -24,13 +24,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.RangedWrapper;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
 import appeng.api.networking.IGrid;
@@ -172,7 +177,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 			for( final Entry<IInterfaceHost, InvTracker> en : this.diList.entrySet() )
 			{
 				final InvTracker inv = en.getValue();
-				for( int x = 0; x < inv.server.getSizeInventory(); x++ )
+				for( int x = 0; x < inv.server.getSlots(); x++ )
 				{
 					if( this.isDifferent( inv.server.getStackInSlot( x ), inv.client.getStackInSlot( x ) ) )
 					{
@@ -208,10 +213,8 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 
 			final InventoryAdaptor playerHand = new AdaptorPlayerHand( player );
 
-			final WrapperInvSlot slotInv = new PatternInvSlot( inv.server );
-
-			final IInventory theSlot = slotInv.getWrapper( slot );
-			final InventoryAdaptor interfaceSlot = new AdaptorIInventory( theSlot );
+			final IItemHandlerModifiable theSlot = new PatternSlotWrapper(inv.server, slot);
+			final InventoryAdaptor interfaceSlot = InventoryAdaptor.getAdaptor( theSlot, null );
 
 			switch( action )
 			{
@@ -229,7 +232,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 							inSlot = inSlot.copy();
 							final ItemStack inHand = player.inventory.getItemStack().copy();
 
-							theSlot.setInventorySlotContents( 0, ItemStack.EMPTY );
+							theSlot.setStackInSlot( 0, ItemStack.EMPTY );
 							player.inventory.setItemStack( ItemStack.EMPTY );
 
 							player.inventory.setItemStack( interfaceSlot.addItems( inHand.copy() ) );
@@ -241,14 +244,13 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 							else
 							{
 								player.inventory.setItemStack( inHand );
-								theSlot.setInventorySlotContents( 0, inSlot );
+								theSlot.setStackInSlot( 0, inSlot );
 							}
 						}
 					}
 					else
-					{
-						final IInventory mySlot = slotInv.getWrapper( slot );
-						mySlot.setInventorySlotContents( 0, playerHand.addItems( mySlot.getStackInSlot( 0 ) ) );
+					{		
+						theSlot.setStackInSlot( 0, playerHand.addItems( theSlot.getStackInSlot( 0 ) ) );
 					}
 
 					break;
@@ -282,17 +284,16 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 					break;
 				case SHIFT_CLICK:
 
-					final IInventory mySlot = slotInv.getWrapper( slot );
 					final InventoryAdaptor playerInv = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
-					mySlot.setInventorySlotContents( 0, playerInv.addItems( mySlot.getStackInSlot( 0 ) ) );
+					theSlot.setStackInSlot( 0, playerInv.addItems( theSlot.getStackInSlot( 0 ) ) );
 
 					break;
 				case MOVE_REGION:
 
 					final InventoryAdaptor playerInvAd = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
-					for( int x = 0; x < inv.server.getSizeInventory(); x++ )
+					for( int x = 0; x < inv.server.getSlots(); x++ )
 					{
-						inv.server.setInventorySlotContents( x, playerInvAd.addItems( inv.server.getStackInSlot( x ) ) );
+						inv.server.setStackInSlot( x, playerInvAd.addItems( inv.server.getStackInSlot( x ) ) );
 					}
 
 					break;
@@ -351,7 +352,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 		{
 			final InvTracker inv = en.getValue();
 			this.byId.put( inv.which, inv );
-			this.addItems( data, inv, 0, inv.server.getSizeInventory() );
+			this.addItems( data, inv, 0, inv.server.getSlots() );
 		}
 	}
 
@@ -388,7 +389,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 			final ItemStack is = inv.server.getStackInSlot( x + offset );
 
 			// "update" client side.
-			inv.client.setInventorySlotContents( x + offset, is.isEmpty() ? ItemStack.EMPTY : is.copy() );
+			inv.client.setStackInSlot( x + offset, is.isEmpty() ? ItemStack.EMPTY : is.copy() );
 
 			if( !is.isEmpty() )
 			{
@@ -407,30 +408,35 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 		private final long sortBy;
 		private final long which = autoBase++;
 		private final String unlocalizedName;
-		private final IInventory client;
-		private final IInventory server;
+		private final IItemHandlerModifiable client;
+		private final IItemHandlerModifiable server;
 
-		public InvTracker( final DualityInterface dual, final IInventory patterns, final String unlocalizedName )
+		public InvTracker( final DualityInterface dual, final IItemHandlerModifiable patterns, final String unlocalizedName )
 		{
 			this.server = patterns;
-			this.client = new AppEngInternalInventory( null, this.server.getSizeInventory() );
+			this.client = new AppEngInternalInventory( null, this.server.getSlots() );
 			this.unlocalizedName = unlocalizedName;
 			this.sortBy = dual.getSortValue();
 		}
 	}
 
-	private static class PatternInvSlot extends WrapperInvSlot
+	private static class PatternSlotWrapper extends RangedWrapper
 	{
-
-		public PatternInvSlot( final IInventory inv )
-		{
-			super( inv );
+		public PatternSlotWrapper( final IItemHandlerModifiable inv, int slot )
+		{			
+			super( inv,  slot, slot + 1);
 		}
-
+		
 		@Override
-		public boolean isItemValid( final ItemStack itemstack )
-		{
-			return !itemstack.isEmpty() && itemstack.getItem() instanceof ItemEncodedPattern;
-		}
+		@Nonnull
+	    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
+	    {
+			if (!stack.isEmpty() && stack.getItem() instanceof ItemEncodedPattern)
+			{
+	            return super.insertItem(slot, stack, simulate);
+				
+			}
+	        return stack;
+	    }
 	}
 }
