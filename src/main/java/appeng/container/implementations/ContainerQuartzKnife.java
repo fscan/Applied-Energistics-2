@@ -26,6 +26,7 @@ import appeng.container.AEBaseContainer;
 import appeng.container.slot.QuartzKnifeOutput;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.contents.QuartzKnifeObj;
+import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.Platform;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -34,7 +35,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 
 public class ContainerQuartzKnife extends AEBaseContainer
@@ -42,7 +42,7 @@ public class ContainerQuartzKnife extends AEBaseContainer
 
 	private final QuartzKnifeObj toolInv;
 
-	private final IItemHandler inSlot = new QuartzKniveItemHandler();
+	private final IItemHandler inSlot = new AppEngInternalInventory(null, 1, 1);
 	private final SlotRestrictedInput metals;
 	private final QuartzKnifeOutput output;
 	private String myName = "";
@@ -55,7 +55,7 @@ public class ContainerQuartzKnife extends AEBaseContainer
 		this.metals = new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.METAL_INGOTS, this.inSlot, 0, 94, 44, ip );
 		this.addSlotToContainer( this.metals );
 
-		this.output = new QuartzKnifeOutput( this.inSlot, 0, 134, 44, -1 );
+		this.output = new QuartzKnifeOutput( new QuartzKniveItemHandler( this.inSlot ), 0, 134, 44, -1 );
 		this.addSlotToContainer( this.output );
 
 		this.lockPlayerInventorySlot( ip.currentItem );
@@ -104,19 +104,26 @@ public class ContainerQuartzKnife extends AEBaseContainer
 		}
 	}
 	
-	private class QuartzKniveItemHandler extends ItemStackHandler
+	private class QuartzKniveItemHandler implements IItemHandler
 	{		
+		private final IItemHandler baseInv;
+		
+		public QuartzKniveItemHandler(final IItemHandler input)
+		{
+			this.baseInv = input;
+		}
+		
 	    @Override
 	    public int getSlotLimit(int slot)
 	    {
-	        return 1;
+	        return baseInv.getSlotLimit(slot);
 	    }
 	    
 	    @Override
 	    @Nonnull
 	    public ItemStack getStackInSlot(int slot)
 	    {
-	    	final ItemStack input = super.getStackInSlot( slot );
+	    	final ItemStack input = baseInv.getStackInSlot( slot );
 			if( input == ItemStack.EMPTY )
 			{
 				return ItemStack.EMPTY;
@@ -155,7 +162,7 @@ public class ContainerQuartzKnife extends AEBaseContainer
 	    
 		private boolean makePlate(boolean simulate)
 		{
-			if( !super.extractItem(0, 1, simulate).isEmpty() )
+			if( !baseInv.extractItem(0, 1, simulate).isEmpty() )
 			{
 				if (!simulate)
 				{
@@ -171,6 +178,19 @@ public class ContainerQuartzKnife extends AEBaseContainer
 				return true;
 			}
 			return false;
+		}
+
+		@Override
+		public int getSlots() 
+		{
+			return baseInv.getSlots();
+		}
+
+		@Override
+		public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) 
+		{
+			//readonly
+			return stack;
 		}
 	}
 	
