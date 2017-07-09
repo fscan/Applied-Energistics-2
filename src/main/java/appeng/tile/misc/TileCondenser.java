@@ -208,11 +208,7 @@ public class TileCondenser extends AEBaseInvTile implements IConfigManagerHost, 
 	@Override
 	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
 	{
-		if( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
-		{
-			return true;
-		}
-		else if( capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY )
+		if( capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY )
 		{
 			return true;
 		}

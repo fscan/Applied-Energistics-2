@@ -99,17 +99,9 @@ public class TileEnergyAcceptor extends AENetworkPowerTile
 	}
 	
 	@Override
-	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
-	{
-		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
-			return false;
-		return super.hasCapability( capability, facing );
-	}
-
-	@Override
 	public IItemHandlerModifiable getInternalInventory()
 	{
-		return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
+		return null;
 	}
 
 	@Override

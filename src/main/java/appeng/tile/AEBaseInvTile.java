@@ -126,7 +126,11 @@ public abstract class AEBaseInvTile extends AEBaseTile implements IAEAppEngInven
 	@Override
 	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
 	{
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability( capability, facing );
+		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+		{
+			return getInternalInventory() != null;
+		}		
+		return super.hasCapability( capability, facing );
 	}	
 	
 	@SuppressWarnings( "unchecked" )

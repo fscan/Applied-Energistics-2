@@ -194,23 +194,13 @@ public class TileController extends AENetworkPowerTile
 	@Override
 	public IItemHandlerModifiable getInternalInventory()
 	{
-		return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
+		return null;
 	}
 
 	@Override
 	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removed, final ItemStack added )
 	{
 	}
-
-	@Override
-	public boolean hasCapability( Capability<?> capability, EnumFacing facing )
-	{
-		if ( capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
-			return false;
-		return super.hasCapability( capability, facing );
-	}	
-	
-	
 	
 	/**
 	 * Check for a controller at this coordinates as well as is it loaded.
