@@ -20,8 +20,6 @@ package appeng.parts.automation;
 
 
 import java.util.List;
-
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.RedstoneMode;

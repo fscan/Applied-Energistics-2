@@ -26,7 +26,6 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
 import net.minecraftforge.items.IItemHandler;
 import appeng.api.AEApi;
 import appeng.api.storage.data.IAEItemStack;

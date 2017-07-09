@@ -28,11 +28,7 @@ import appeng.tile.grid.AENetworkPowerTile;
 import appeng.tile.inventory.InvOperation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
 
 
 public class TileEnergyAcceptor extends AENetworkPowerTile

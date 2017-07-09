@@ -21,7 +21,6 @@ package appeng.helpers;
 
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.BaseActionSource;

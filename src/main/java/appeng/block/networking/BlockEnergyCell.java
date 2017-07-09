@@ -32,7 +32,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import appeng.block.AEBaseTileBlock;
 import appeng.helpers.AEGlassMaterial;
-import appeng.tile.networking.TileEnergyCell;
 import appeng.util.Platform;
 
 

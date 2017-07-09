@@ -19,7 +19,6 @@
 package appeng.container.slot;
 
 
-import net.minecraft.inventory.IInventory;
 import net.minecraftforge.items.IItemHandler;
 
 

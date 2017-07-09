@@ -23,7 +23,6 @@ import java.util.EnumSet;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.IItemHandlerModifiable;

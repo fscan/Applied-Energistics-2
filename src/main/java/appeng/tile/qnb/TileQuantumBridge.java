@@ -25,7 +25,6 @@ import java.util.Optional;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.block.Block;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

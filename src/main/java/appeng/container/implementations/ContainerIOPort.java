@@ -20,7 +20,6 @@ package appeng.container.implementations;
 
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraftforge.items.IItemHandler;
 import appeng.api.config.FullnessMode;
 import appeng.api.config.OperationMode;

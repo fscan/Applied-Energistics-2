@@ -21,7 +21,6 @@ package appeng.util.iterators;
 
 import java.util.Iterator;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 

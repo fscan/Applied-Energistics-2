@@ -26,7 +26,6 @@ package appeng.api.implementations.guiobjects;
 
 import appeng.api.networking.IGridHost;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandler;
 
 
 /**

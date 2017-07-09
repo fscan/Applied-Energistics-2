@@ -2,7 +2,6 @@ package appeng.client.render.tesr;
 
 
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
