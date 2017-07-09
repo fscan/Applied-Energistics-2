@@ -21,16 +21,6 @@ package appeng.container.implementations;
 
 import java.util.Iterator;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
 import appeng.api.AEApi;
 import appeng.api.config.CopyMode;
 import appeng.api.config.FuzzyMode;
@@ -48,6 +38,14 @@ import appeng.tile.misc.TileCellWorkbench;
 import appeng.util.Platform;
 import appeng.util.helpers.ItemHandlerUtil;
 import appeng.util.iterators.NullIterator;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 
 public class ContainerCellWorkbench extends ContainerUpgradeable
@@ -92,11 +90,11 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 	@Override
 	protected void setupConfig()
 	{
-		final IItemHandlerModifiable cell = this.getUpgradeable().getInventoryByName( "cell" );
+		final IItemHandler cell = this.getUpgradeable().getInventoryByName( "cell" );
 		this.addSlotToContainer( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.WORKBENCH_CELL, cell, 0, 152, 8, this.getPlayerInv() ) );
 
-		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
-		final IItemHandlerModifiable upgradeInventory = this.getCellUpgradeInventory();
+		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandler upgradeInventory = this.getCellUpgradeInventory();
 		// null, 3 * 8 );
 
 		int offset = 0;
@@ -187,9 +185,9 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 		return idx < this.availableUpgrades();
 	}
 
-	public IItemHandlerModifiable getCellUpgradeInventory()
+	public IItemHandler getCellUpgradeInventory()
 	{
-		final IItemHandlerModifiable upgradeInventory = this.workBench.getCellUpgradeInventory();
+		final IItemHandler upgradeInventory = this.workBench.getCellUpgradeInventory();
 
 		return upgradeInventory == null ? (IItemHandlerModifiable) EmptyHandler.INSTANCE : upgradeInventory;
 	}
@@ -223,7 +221,7 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 
 	public void partition()
 	{
-		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
 
 		final IMEInventory<IAEItemStack> cellInv = AEApi.instance().registries().cell().getCellInventory( this.getUpgradeable().getInventoryByName( "cell" ).getStackInSlot( 0 ), null, StorageChannel.ITEMS );
 
@@ -240,11 +238,11 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 			{
 				final ItemStack g = i.next().getItemStack();
 				g.setCount( 1 );
-				inv.setStackInSlot( x, g );
+				ItemHandlerUtil.setStackInSlot( inv, x, g );
 			}
 			else
 			{
-				inv.setStackInSlot( x, ItemStack.EMPTY );
+				ItemHandlerUtil.setStackInSlot( inv, x, ItemStack.EMPTY );
 			}
 		}
 

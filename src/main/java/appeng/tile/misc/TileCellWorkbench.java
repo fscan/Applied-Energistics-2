@@ -21,13 +21,6 @@ package appeng.tile.misc;
 
 import java.util.List;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.CopyMode;
 import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
@@ -43,6 +36,13 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
+import appeng.util.helpers.ItemHandlerUtil;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, IAEAppEngInventory, IConfigManagerHost
@@ -52,8 +52,8 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 	private final AppEngInternalAEInventory config = new AppEngInternalAEInventory( this, 63 );
 	private final ConfigManager manager = new ConfigManager( this );
 
-	private IItemHandlerModifiable cacheUpgrades = null;
-	private IItemHandlerModifiable cacheConfig = null;
+	private IItemHandler cacheUpgrades = null;
+	private IItemHandler cacheConfig = null;
 	private boolean locked = false;
 
 	public TileCellWorkbench()
@@ -62,7 +62,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		this.cell.setEnableClientEvents( true );
 	}
 
-	public IItemHandlerModifiable getCellUpgradeInventory()
+	public IItemHandler getCellUpgradeInventory()
 	{
 		if( this.cacheUpgrades == null )
 		{
@@ -78,7 +78,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IItemHandlerModifiable inv = cell.getUpgradesInventory( is );
+			final IItemHandler inv = cell.getUpgradesInventory( is );
 			if( inv == null )
 			{
 				return null;
@@ -152,7 +152,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 			this.cacheUpgrades = null;
 			this.cacheConfig = null;
 
-			final IItemHandlerModifiable configInventory = this.getCellConfigInventory();
+			final IItemHandler configInventory = this.getCellConfigInventory();
 			if( configInventory != null )
 			{
 				boolean cellHasConfig = false;
@@ -176,7 +176,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				{
 					for( int x = 0; x < this.config.getSlots(); x++ )
 					{
-						configInventory.setStackInSlot( x, this.config.getStackInSlot( x ) );
+						ItemHandlerUtil.setStackInSlot( configInventory, x, this.config.getStackInSlot( x ) );
 					}
 
 					//TODO: should not be needed anymore
@@ -197,12 +197,12 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		}
 		else if( inv == this.config && !this.locked )
 		{
-			final IItemHandlerModifiable c = this.getCellConfigInventory();
+			final IItemHandler c = this.getCellConfigInventory();
 			if( c != null )
 			{
 				for( int x = 0; x < this.config.getSlots(); x++ )
-				{
-					c.setStackInSlot( x, this.config.getStackInSlot( x ) );
+				{				
+					ItemHandlerUtil.setStackInSlot( c, x, this.config.getStackInSlot( x ) );
 				}
 
 				//TODO: should not be needed anymore
@@ -211,7 +211,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		}
 	}
 
-	private IItemHandlerModifiable getCellConfigInventory()
+	private IItemHandler getCellConfigInventory()
 	{
 		if( this.cacheConfig == null )
 		{
@@ -227,7 +227,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IItemHandlerModifiable inv = cell.getConfigInventory( is );
+			final IItemHandler inv = cell.getConfigInventory( is );
 			if( inv == null )
 			{
 				return null;

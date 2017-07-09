@@ -21,15 +21,6 @@ package appeng.me.storage;
 
 import java.util.HashSet;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.oredict.OreDictionary;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -47,6 +38,12 @@ import appeng.core.AEConfig;
 import appeng.core.AELog;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.oredict.OreDictionary;
 
 
 public class CellInventory implements ICellInventory
@@ -536,13 +533,13 @@ public class CellInventory implements ICellInventory
 	}
 
 	@Override
-	public IItemHandlerModifiable getConfigInventory()
+	public IItemHandler getConfigInventory()
 	{
 		return this.cellType.getConfigInventory( this.i );
 	}
 
 	@Override
-	public IItemHandlerModifiable getUpgradesInventory()
+	public IItemHandler getUpgradesInventory()
 	{
 		return this.cellType.getUpgradesInventory( this.i );
 	}

@@ -23,11 +23,6 @@ import java.io.IOException;
 
 import org.lwjgl.input.Mouse;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 import appeng.api.config.ActionItems;
 import appeng.api.config.CopyMode;
 import appeng.api.config.FuzzyMode;
@@ -42,6 +37,10 @@ import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketValueConfig;
 import appeng.tile.misc.TileCellWorkbench;
 import appeng.util.Platform;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 
 public class GuiCellWorkbench extends GuiUpgradeable

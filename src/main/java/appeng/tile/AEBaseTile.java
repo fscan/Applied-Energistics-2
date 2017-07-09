@@ -31,21 +31,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.implementations.tiles.ISegmentedInventory;
 import appeng.api.util.ICommonTile;
 import appeng.api.util.IConfigManager;
@@ -60,6 +45,19 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import appeng.util.SettingsFrom;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
 
 
 public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, ICustomNameObject
@@ -508,7 +506,7 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 
 		if( this instanceof ISegmentedInventory )
 		{
-			final IItemHandlerModifiable inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
+			final IItemHandler inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
 			if( inv instanceof AppEngInternalAEInventory )
 			{
 				final AppEngInternalAEInventory target = (AppEngInternalAEInventory) inv;
@@ -582,7 +580,7 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 
 		if( this instanceof ISegmentedInventory )
 		{
-			final IItemHandlerModifiable inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
+			final IItemHandler inv = ( (ISegmentedInventory) this ).getInventoryByName( "config" );
 			if( inv instanceof AppEngInternalAEInventory )
 			{
 				( (AppEngInternalAEInventory) inv ).writeToNBT( output, "config" );

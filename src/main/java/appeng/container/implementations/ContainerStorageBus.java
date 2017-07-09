@@ -21,11 +21,6 @@ package appeng.container.implementations;
 
 import java.util.Iterator;
 
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.FuzzyMode;
@@ -44,6 +39,9 @@ import appeng.parts.misc.PartStorageBus;
 import appeng.util.Platform;
 import appeng.util.helpers.ItemHandlerUtil;
 import appeng.util.iterators.NullIterator;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 
 public class ContainerStorageBus extends ContainerUpgradeable
@@ -142,7 +140,7 @@ public class ContainerStorageBus extends ContainerUpgradeable
 
 	public void partition()
 	{
-		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
 
 		final IMEInventory<IAEItemStack> cellInv = this.storageBus.getInternalHandler();
 
@@ -159,11 +157,11 @@ public class ContainerStorageBus extends ContainerUpgradeable
 			{
 				final ItemStack g = i.next().getItemStack();
 				g.setCount( 1 );
-				inv.setStackInSlot( x, g );
+				ItemHandlerUtil.setStackInSlot( inv, x, g );
 			}
 			else
 			{
-				inv.setStackInSlot( x, ItemStack.EMPTY );
+				ItemHandlerUtil.setStackInSlot( inv, x, ItemStack.EMPTY );
 			}
 		}
 
