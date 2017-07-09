@@ -102,6 +102,7 @@ import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
+import appeng.util.inv.AdaptorItemHandler;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.item.AEItemStack;
 
@@ -757,7 +758,7 @@ public class DualityInterface implements IGridTickable, IStorageMonitorable, IIn
 
 	private InventoryAdaptor getAdaptor( final int slot )
 	{		
-		return InventoryAdaptor.getAdaptor( new RangedWrapper(this.storage, slot, slot + 1), null); 
+		return new AdaptorItemHandler( new RangedWrapper( this.storage, slot, slot + 1 ) ); 
 	}
 
 	private boolean handleCrafting( final int x, final InventoryAdaptor d, final IAEItemStack itemStack )
@@ -1183,19 +1184,9 @@ public class DualityInterface implements IGridTickable, IStorageMonitorable, IIn
 			final InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor( directedTile, direction.getOpposite() );
 			if( directedTile instanceof ICraftingMachine || adaptor != null )
 			{
-				if( directedTile instanceof IInventory && ( (IInventory) directedTile ).getSizeInventory() == 0 )
+				if( adaptor != null && !adaptor.hasSlots() )
 				{
 					continue;
-				}
-
-				if( directedTile instanceof ISidedInventory )
-				{
-					final int[] sides = ( (ISidedInventory) directedTile ).getSlotsForFace( direction.getOpposite() );
-
-					if( sides == null || sides.length == 0 )
-					{
-						continue;
-					}
 				}
 
 				final IBlockState directedBlockState = hostWorld.getBlockState( targ );
@@ -1306,7 +1297,7 @@ public class DualityInterface implements IGridTickable, IStorageMonitorable, IIn
 
 		public InterfaceInventory( final DualityInterface tileInterface )
 		{
-			super( InventoryAdaptor.getAdaptor(tileInterface.storage, null) );
+			super( new AdaptorItemHandler( tileInterface.storage ) );
 			this.setActionSource( new MachineSource( DualityInterface.this.iHost ) );
 		}
 

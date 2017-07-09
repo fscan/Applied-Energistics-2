@@ -26,7 +26,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 public interface IAEAppEngInventory
 {
-
 	void saveChanges();
 
 	void onChangeInventory( IItemHandlerModifiable inv, int slot, InvOperation mc, ItemStack removedStack, ItemStack newStack );

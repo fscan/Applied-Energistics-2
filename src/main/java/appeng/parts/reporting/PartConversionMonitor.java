@@ -22,14 +22,6 @@ package appeng.parts.reporting;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-
 import appeng.api.networking.energy.IEnergySource;
 import appeng.api.networking.security.PlayerSource;
 import appeng.api.parts.IPartModel;
@@ -43,6 +35,12 @@ import appeng.parts.PartModel;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 
 
 public class PartConversionMonitor extends AbstractPartMonitor
@@ -161,7 +159,7 @@ public class PartConversionMonitor extends AbstractPartMonitor
 				if( retrieved != null )
 				{
 					ItemStack newItems = retrieved.getItemStack();
-					final InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+					final InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor( player );
 					newItems = adaptor.addItems( newItems );
 					if( !newItems.isEmpty() )
 					{

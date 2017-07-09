@@ -22,17 +22,6 @@ package appeng.items.storage;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.IncludeExclude;
@@ -55,6 +44,16 @@ import appeng.items.contents.CellUpgrades;
 import appeng.items.materials.MaterialType;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public final class ItemBasicStorageCell extends AEBaseItem implements IStorageCell, IItemGroup
@@ -233,7 +232,7 @@ public final class ItemBasicStorageCell extends AEBaseItem implements IStorageCe
 			final IMEInventoryHandler inv = AEApi.instance().registries().cell().getCellInventory( stack, null, StorageChannel.ITEMS );
 			if( inv != null && playerInventory.getCurrentItem() == stack )
 			{
-				final InventoryAdaptor ia = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+				final InventoryAdaptor ia = InventoryAdaptor.getAdaptor( player );
 				final IItemList<IAEItemStack> list = inv.getAvailableItems( StorageChannel.ITEMS.createList() );
 				if( list.isEmpty() && ia != null )
 				{

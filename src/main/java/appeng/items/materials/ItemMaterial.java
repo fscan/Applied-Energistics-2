@@ -33,26 +33,6 @@ import java.util.regex.Pattern;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.oredict.OreDictionary;
-
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.api.implementations.items.IItemGroup;
@@ -68,6 +48,24 @@ import appeng.core.features.MaterialStackSrc;
 import appeng.items.AEBaseItem;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
+import appeng.util.inv.AdaptorItemHandler;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.oredict.OreDictionary;
 
 
 public final class ItemMaterial extends AEBaseItem implements IStorageComponent, IUpgradeModule
@@ -310,7 +308,7 @@ public final class ItemMaterial extends AEBaseItem implements IStorageComponent,
 
 				if( u != null )
 				{
-					final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( upgrades, EnumFacing.UP );
+					final InventoryAdaptor ad = new AdaptorItemHandler( upgrades );
 					if( ad != null )
 					{
 						if( player.world.isRemote )

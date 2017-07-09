@@ -26,16 +26,6 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.RangedWrapper;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
 import appeng.api.networking.IGrid;
@@ -54,9 +44,13 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.misc.TileInterface;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-import appeng.util.inv.AdaptorIInventory;
-import appeng.util.inv.AdaptorPlayerHand;
-import appeng.util.inv.WrapperInvSlot;
+import appeng.util.inv.AdaptorItemHandler;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.RangedWrapper;
 
 
 public final class ContainerInterfaceTerminal extends AEBaseContainer
@@ -211,10 +205,10 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 			final ItemStack is = inv.server.getStackInSlot( slot );
 			final boolean hasItemInHand = !player.inventory.getItemStack().isEmpty();
 
-			final InventoryAdaptor playerHand = new AdaptorPlayerHand( player );
+			final InventoryAdaptor playerHand = InventoryAdaptor.getAdaptor( player );
 
 			final IItemHandlerModifiable theSlot = new PatternSlotWrapper(inv.server, slot);
-			final InventoryAdaptor interfaceSlot = InventoryAdaptor.getAdaptor( theSlot, null );
+			final InventoryAdaptor interfaceSlot = new AdaptorItemHandler( theSlot );
 
 			switch( action )
 			{
@@ -284,13 +278,13 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 					break;
 				case SHIFT_CLICK:
 
-					final InventoryAdaptor playerInv = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+					final InventoryAdaptor playerInv = InventoryAdaptor.getAdaptor( player );
 					theSlot.setStackInSlot( 0, playerInv.addItems( theSlot.getStackInSlot( 0 ) ) );
 
 					break;
 				case MOVE_REGION:
 
-					final InventoryAdaptor playerInvAd = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+					final InventoryAdaptor playerInvAd = InventoryAdaptor.getAdaptor( player );
 					for( int x = 0; x < inv.server.getSlots(); x++ )
 					{
 						inv.server.setStackInSlot( x, playerInvAd.addItems( inv.server.getStackInSlot( x ) ) );

@@ -19,26 +19,17 @@
 package appeng.util;
 
 
-import java.util.ArrayList;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-
 import appeng.api.config.FuzzyMode;
-import appeng.util.inv.AdaptorIInventory;
 import appeng.util.inv.AdaptorItemHandler;
-import appeng.util.inv.AdaptorList;
-import appeng.util.inv.AdaptorPlayerInventory;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.inv.ItemSlot;
-import appeng.util.inv.WrapperMCISidedInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 
 /**
@@ -47,68 +38,32 @@ import appeng.util.inv.WrapperMCISidedInventory;
  */
 public abstract class InventoryAdaptor implements Iterable<ItemSlot>
 {
-
-	// returns an appropriate adaptor, or null
-	public static InventoryAdaptor getAdaptor( final Object te, final EnumFacing d )
+	public static InventoryAdaptor getAdaptor( final TileEntity te, final EnumFacing d )
 	{
-		if( te == null )
+		if ( te != null )
 		{
-			return null;
-		}
-
-		if ( te instanceof IItemHandler)
-		{
-			return new AdaptorItemHandler( (IItemHandler) te );			
-		}
-		
-		if ( te instanceof ICapabilityProvider )
-		{
-			ICapabilityProvider capProvider = (ICapabilityProvider) te;
-
-			// Attempt getting an IItemHandler for the given side via caps
-			IItemHandler itemHandler = capProvider.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d );
-			if( itemHandler != null && itemHandler.getSlots() > 0 )
+			if ( te.hasCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d ) )
 			{
-				return new AdaptorItemHandler( itemHandler );
+				// Attempt getting an IItemHandler for the given side via caps
+				IItemHandler itemHandler = te.getCapability( CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d );
+				if( itemHandler != null )
+				{
+					return new AdaptorItemHandler( itemHandler );
+				}
 			}
 		}
-
-		if( te instanceof EntityPlayer )
-		{
-			return new AdaptorIInventory( new AdaptorPlayerInventory( ( (EntityPlayer) te ).inventory, false ) );
-		}
-		else if( te instanceof ArrayList )
-		{
-			@SuppressWarnings( "unchecked" )
-			final ArrayList<ItemStack> list = (ArrayList<ItemStack>) te;
-
-			return new AdaptorList( list );
-		}
-		else if( te instanceof TileEntityChest )
-		{
-			return new AdaptorIInventory( Platform.GetChestInv( te ) );
-		}
-		else if( te instanceof ISidedInventory )
-		{
-			final ISidedInventory si = (ISidedInventory) te;
-			final int[] slots = si.getSlotsForFace( d );
-			if( si.getSizeInventory() > 0 && slots != null && slots.length > 0 )
-			{
-				return new AdaptorIInventory( new WrapperMCISidedInventory( si, d ) );
-			}
-		}
-		else if( te instanceof IInventory )
-		{
-			final IInventory i = (IInventory) te;
-			if( i.getSizeInventory() > 0 )
-			{
-				return new AdaptorIInventory( i );
-			}
-		}
-
 		return null;
 	}
-
+	
+	public static InventoryAdaptor getAdaptor( final EntityPlayer te )
+	{
+		if ( te != null )
+		{
+			return new AdaptorItemHandler( new PlayerInvWrapper( ( (EntityPlayer) te ).inventory ) );			
+		}
+		return null;
+	}
+	
 	// return what was extracted.
 	public abstract ItemStack removeItems( int amount, ItemStack filter, IInventoryDestination destination );
 
@@ -125,4 +80,6 @@ public abstract class InventoryAdaptor implements Iterable<ItemSlot>
 	public abstract ItemStack simulateAdd( ItemStack toBeSimulated );
 
 	public abstract boolean containsItems();
+	
+	public abstract boolean hasSlots();
 }

@@ -37,7 +37,6 @@ import appeng.items.parts.PartModels;
 import appeng.me.GridAccessException;
 import appeng.me.cache.helpers.TunnelCollection;
 import appeng.util.Platform;
-import appeng.util.inv.WrapperChainedInventory;
 import appeng.util.inv.WrapperChainedItemHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -160,7 +159,7 @@ public class PartP2PItems extends PartP2PTunnel<PartP2PItems> implements IItemHa
 
 		if( this.requested && this.cachedInv != null )
 		{
-			( (WrapperChainedInventory) this.cachedInv ).cycleOrder();
+			( (WrapperChainedItemHandler) this.cachedInv ).cycleOrder();
 		}
 
 		this.requested = false;

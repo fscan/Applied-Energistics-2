@@ -21,17 +21,6 @@ package appeng.tile.storage;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.FullnessMode;
@@ -76,7 +65,16 @@ import appeng.util.IConfigManagerHost;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.helpers.ItemHandlerUtil;
-import appeng.util.inv.WrapperInventoryRange;
+import appeng.util.inv.AdaptorItemHandler;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 
 public class TileIOPort extends AENetworkInvTile implements IUpgradeableHost, IConfigManagerHost, IGridTickable
@@ -490,7 +488,7 @@ public class TileIOPort extends AENetworkInvTile implements IUpgradeableHost, IC
 
 	private boolean moveSlot( final int x )
 	{
-		final InventoryAdaptor ad = InventoryAdaptor.getAdaptor( outputCells, null );			
+		final InventoryAdaptor ad = new AdaptorItemHandler( outputCells );			
 		if (ad.addItems(inputCells.getStackInSlot( x )).isEmpty())
 		{
 			inputCells.setStackInSlot( x, ItemStack.EMPTY );

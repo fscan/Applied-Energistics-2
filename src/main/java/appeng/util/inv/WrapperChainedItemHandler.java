@@ -1,5 +1,7 @@
 package appeng.util.inv;
 
+import java.util.ArrayList;
+
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
@@ -8,13 +10,18 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 
 public class WrapperChainedItemHandler implements IItemHandler 
 {
-	private final IItemHandler[] itemHandler; // the handlers	
-	private final int[] baseIndex; // index-offsets of the different handlers
-	private final int slotCount; // number of total slots
+	private IItemHandler[] itemHandler; // the handlers	
+	private int[] baseIndex; // index-offsets of the different handlers
+	private int slotCount; // number of total slots
 
 	public WrapperChainedItemHandler(IItemHandler... itemHandler)
 	{
-		this.itemHandler = itemHandler;
+		setItemHandlers(itemHandler);
+	}
+
+	private void setItemHandlers(IItemHandler []handlers)
+	{
+		this.itemHandler = handlers;
 	    this.baseIndex = new int[itemHandler.length];
 	    int index = 0;
 	    for (int i = 0; i < itemHandler.length; i++)
@@ -22,9 +29,10 @@ public class WrapperChainedItemHandler implements IItemHandler
 	    	index += itemHandler[i].getSlots();
 	        baseIndex[i] = index;
 	    }
-	    this.slotCount = index;
+	    this.slotCount = index;		
 	}
 
+	
 	// returns the handler index for the slot
 	private int getIndexForSlot(int slot)
 	{
@@ -58,6 +66,21 @@ public class WrapperChainedItemHandler implements IItemHandler
         }
         return slot - baseIndex[index - 1];
     }
+    
+    public void cycleOrder()
+    {
+    	if ( this.itemHandler.length > 1 )
+    	{
+    		ArrayList<IItemHandler> newOrder = new  ArrayList<>();
+    		newOrder.add( this.itemHandler[ this.itemHandler.length - 1 ] );
+    		for ( int i = 0; i < this.itemHandler.length - 1; ++i )
+    		{
+    			newOrder.add( this.itemHandler[i] );
+    		}
+    		this.setItemHandlers( newOrder.toArray( new IItemHandler[ this.itemHandler.length ] ));
+    	}    	
+    }
+    
 
     @Override
     public int getSlots()

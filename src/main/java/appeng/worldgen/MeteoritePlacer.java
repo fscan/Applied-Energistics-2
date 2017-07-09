@@ -24,20 +24,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.oredict.OreDictionary;
-
 import appeng.api.AEApi;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IBlocks;
@@ -53,6 +39,18 @@ import appeng.worldgen.meteorite.FalloutSand;
 import appeng.worldgen.meteorite.FalloutSnow;
 import appeng.worldgen.meteorite.IMeteoriteWorld;
 import appeng.worldgen.meteorite.MeteoriteBlockPutter;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.oredict.OreDictionary;
 
 
 public final class MeteoritePlacer
@@ -223,10 +221,9 @@ public final class MeteoritePlacer
 			this.skyChestDefinition.maybeBlock().ifPresent( block -> this.putter.put( w, x, y, z, block ) );
 
 			final TileEntity te = w.getTileEntity( x, y, z );
-			if( te instanceof IInventory )
-			{
-				final InventoryAdaptor ap = InventoryAdaptor.getAdaptor( te, EnumFacing.UP );
-
+			final InventoryAdaptor ap = InventoryAdaptor.getAdaptor( te, EnumFacing.UP );
+			if( ap != null)
+			{			
 				int primary = Math.max( 1, (int) ( Math.random() * 4 ) );
 
 				if( primary > 3 ) // in case math breaks...

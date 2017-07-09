@@ -23,24 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.inventory.Slot;
-import net.minecraft.inventory.SlotCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.definitions.IDefinitions;
@@ -66,9 +48,25 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-import appeng.util.inv.AdaptorPlayerHand;
+import appeng.util.inv.AdaptorItemHandler;
 import appeng.util.inv.WrapperInvItemHandler;
 import appeng.util.item.AEItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EntityHandsInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 
 public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket
@@ -352,8 +350,8 @@ public class ContainerPatternTerm extends ContainerMEMonitorable implements IAEA
 		if( packetPatternSlot.slotItem != null && this.getCellInventory() != null )
 		{
 			final IAEItemStack out = packetPatternSlot.slotItem.copy();
-			InventoryAdaptor inv = new AdaptorPlayerHand( this.getPlayerInv().player );
-			final InventoryAdaptor playerInv = InventoryAdaptor.getAdaptor( this.getPlayerInv().player, EnumFacing.UP );
+			InventoryAdaptor inv = new AdaptorItemHandler( new EntityHandsInvWrapper( this.getPlayerInv().player ) );
+			final InventoryAdaptor playerInv = InventoryAdaptor.getAdaptor( this.getPlayerInv().player );
 
 			if( packetPatternSlot.shift )
 			{

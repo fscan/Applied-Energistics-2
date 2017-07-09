@@ -48,6 +48,12 @@ public class IMEAdaptor extends InventoryAdaptor
 		this.target = input;
 		this.src = src;
 	}
+	
+	@Override
+	public boolean hasSlots()
+	{
+		return true;
+	}
 
 	@Override
 	public Iterator<ItemSlot> iterator()

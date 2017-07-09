@@ -22,13 +22,6 @@ package appeng.tile.grindstone;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RangedWrapper;
 import appeng.api.AEApi;
 import appeng.api.features.IGrinderRecipe;
 import appeng.api.implementations.tiles.ICrankable;
@@ -39,7 +32,13 @@ import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-import appeng.util.inv.WrapperInventoryRange;
+import appeng.util.inv.AdaptorItemHandler;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.RangedWrapper;
 
 
 public class TileGrinder extends AEBaseInvTile implements ICrankable
@@ -137,7 +136,7 @@ public class TileGrinder extends AEBaseInvTile implements ICrankable
 			}
 
 			this.points = 0;
-			final InventoryAdaptor sia = InventoryAdaptor.getAdaptor( new RangedWrapper( inv, 3, 6), null );
+			final InventoryAdaptor sia = new AdaptorItemHandler( new RangedWrapper( inv, 3, 6) );
 
 			this.addItem( sia, r.getOutput() );
 

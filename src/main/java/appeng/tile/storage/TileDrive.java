@@ -23,13 +23,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.IChestOrDrive;
 import appeng.api.networking.GridFlags;
@@ -59,6 +52,10 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPriorityHost

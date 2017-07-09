@@ -23,15 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Actionable;
 import appeng.api.networking.energy.IEnergySource;
 import appeng.api.networking.security.BaseActionSource;
@@ -45,8 +36,17 @@ import appeng.helpers.InventoryAction;
 import appeng.items.storage.ItemViewCell;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-import appeng.util.inv.AdaptorPlayerHand;
+import appeng.util.inv.AdaptorItemHandler;
 import appeng.util.item.AEItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EntityHandsInvWrapper;
 
 
 public class SlotCraftingTerm extends AppEngCraftingSlot
@@ -106,18 +106,18 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 		InventoryAdaptor ia = null;
 		if( action == InventoryAction.CRAFT_SHIFT ) // craft into player inventory...
 		{
-			ia = InventoryAdaptor.getAdaptor( who, null );
+			ia = InventoryAdaptor.getAdaptor( who );
 			maxTimesToCraft = (int) Math.floor( (double) this.getStack().getMaxStackSize() / (double) howManyPerCraft );
 		}
 		else if( action == InventoryAction.CRAFT_STACK ) // craft into hand, full stack
 		{
-			ia = new AdaptorPlayerHand( who );
+			ia = new AdaptorItemHandler( new EntityHandsInvWrapper( who ) );
 			maxTimesToCraft = (int) Math.floor( (double) this.getStack().getMaxStackSize() / (double) howManyPerCraft );
 		}
 		else
 		// pick up what was crafted...
 		{
-			ia = new AdaptorPlayerHand( who );
+			ia = new AdaptorItemHandler( new EntityHandsInvWrapper( who ) );
 			maxTimesToCraft = 1;
 		}
 

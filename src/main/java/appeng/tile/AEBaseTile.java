@@ -534,19 +534,7 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 	@Override
 	public void getDrops( final World w, final BlockPos pos, final List<ItemStack> drops )
 	{
-		if( this instanceof IInventory )
-		{
-			final IInventory inv = (IInventory) this;
-
-			for( int l = 0; l < inv.getSizeInventory(); l++ )
-			{
-				final ItemStack is = inv.getStackInSlot( l );
-				if( !is.isEmpty() )
-				{
-					drops.add( is );
-				}
-			}
-		}
+		
 	}
 
 	public void getNoDrops( final World w, final BlockPos pos, final List<ItemStack> drops )

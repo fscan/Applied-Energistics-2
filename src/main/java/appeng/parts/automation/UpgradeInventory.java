@@ -19,12 +19,6 @@
 package appeng.parts.automation;
 
 
-import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IUpgradeModule;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -32,6 +26,11 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public abstract class UpgradeInventory extends AppEngInternalInventory implements IAEAppEngInventory
@@ -146,7 +145,7 @@ public abstract class UpgradeInventory extends AppEngInternalInventory implement
 	{
 		this.parent.saveChanges();
 	}
-
+	
 	@Override
 	public void onChangeInventory( final IItemHandlerModifiable inv, final int slot, final InvOperation mc, final ItemStack removedStack, final ItemStack newStack )
 	{

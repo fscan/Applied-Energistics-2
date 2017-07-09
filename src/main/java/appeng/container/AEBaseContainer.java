@@ -29,22 +29,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.SecurityPermissions;
@@ -81,8 +65,22 @@ import appeng.helpers.ICustomNameObject;
 import appeng.helpers.InventoryAction;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-import appeng.util.inv.AdaptorPlayerHand;
+import appeng.util.inv.AdaptorItemHandler;
 import appeng.util.item.AEItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.EntityHandsInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 
 public abstract class AEBaseContainer extends Container
@@ -880,7 +878,7 @@ public abstract class AEBaseContainer extends Container
 
 					ais.setStackSize( myItem.getMaxStackSize() );
 
-					final InventoryAdaptor adp = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+					final InventoryAdaptor adp = InventoryAdaptor.getAdaptor( player );
 					myItem.setCount( (int) ais.getStackSize() );
 					myItem = adp.simulateAdd( myItem );
 
@@ -913,8 +911,8 @@ public abstract class AEBaseContainer extends Container
 
 					ais = Platform.poweredInsert( this.getPowerSource(), this.getCellInventory(), ais, this.getActionSource() );
 					if( ais == null )
-					{
-						final InventoryAdaptor ia = new AdaptorPlayerHand( player );
+					{				
+						final InventoryAdaptor ia = new AdaptorItemHandler( new EntityHandsInvWrapper(player) );
 
 						final ItemStack fail = ia.removeItems( 1, extracted.getItemStack(), null );
 						if( fail.isEmpty() )
@@ -958,7 +956,7 @@ public abstract class AEBaseContainer extends Container
 						ais = Platform.poweredExtraction( this.getPowerSource(), this.getCellInventory(), ais, this.getActionSource() );
 						if( ais != null )
 						{
-							final InventoryAdaptor ia = new AdaptorPlayerHand( player );
+							final InventoryAdaptor ia = new AdaptorItemHandler( new EntityHandsInvWrapper( player ) );
 
 							final ItemStack fail = ia.addItems( ais.getItemStack() );
 							if( !fail.isEmpty() )
@@ -1088,7 +1086,7 @@ public abstract class AEBaseContainer extends Container
 
 						ais.setStackSize( myItem.getMaxStackSize() );
 
-						final InventoryAdaptor adp = InventoryAdaptor.getAdaptor( player, EnumFacing.UP );
+						final InventoryAdaptor adp = InventoryAdaptor.getAdaptor( player );
 						myItem.setCount( (int) ais.getStackSize() );
 						myItem = adp.simulateAdd( myItem );
 
