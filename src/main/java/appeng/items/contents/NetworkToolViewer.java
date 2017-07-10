@@ -27,9 +27,6 @@ import appeng.tile.inventory.IAEItemFilter;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 
@@ -96,21 +93,10 @@ public class NetworkToolViewer implements INetworkTool, IAEAppEngInventory
 	{
 		return inv;
 	}
-
+	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) 
+	public IItemHandlerModifiable getInventory()
 	{
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-	}	
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) 
-	{
-		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-		{
-			return (T) this.inv;
-		}
-		return null;
+		return this.inv;
 	}	
 }

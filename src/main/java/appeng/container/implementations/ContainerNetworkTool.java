@@ -22,8 +22,6 @@ package appeng.container.implementations;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import appeng.api.implementations.guiobjects.INetworkTool;
 import appeng.container.AEBaseContainer;
 import appeng.container.guisync.GuiSync;
@@ -45,14 +43,12 @@ public class ContainerNetworkTool extends AEBaseContainer
 		this.toolInv = te;
 
 		this.lockPlayerInventorySlot( ip.currentItem );
-
-		IItemHandler inv = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		
 		for( int y = 0; y < 3; y++ )
 		{
 			for( int x = 0; x < 3; x++ )
 			{
-				this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, inv, y * 3 + x, 80 - 18 + x * 18, 37 - 18 + y * 18, this.getInventoryPlayer() ) ) );
+				this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, te.getInventory(), y * 3 + x, 80 - 18 + x * 18, 37 - 18 + y * 18, this.getInventoryPlayer() ) ) );
 			}
 		}
 

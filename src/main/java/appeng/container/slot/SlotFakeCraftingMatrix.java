@@ -19,13 +19,13 @@
 package appeng.container.slot;
 
 
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class SlotFakeCraftingMatrix extends SlotFake
 {
 
-	public SlotFakeCraftingMatrix( final IItemHandler inv, final int idx, final int x, final int y )
+	public SlotFakeCraftingMatrix( final IItemHandlerModifiable inv, final int idx, final int x, final int y )
 	{
 		super( inv, idx, x, y );
 	}

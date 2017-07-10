@@ -24,7 +24,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.LevelType;
 import appeng.api.config.RedstoneMode;
@@ -74,7 +74,7 @@ public class ContainerLevelEmitter extends ContainerUpgradeable
 	@Override
 	protected void setupConfig()
 	{
-		final IItemHandler upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
+		final IItemHandlerModifiable upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
 		if( this.availableUpgrades() > 0 )
 		{
 			this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 0, 187, 8, this.getInventoryPlayer() ) ).setNotDraggable() );
@@ -92,7 +92,7 @@ public class ContainerLevelEmitter extends ContainerUpgradeable
 			this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 3, 187, 8 + 18 * 3, this.getInventoryPlayer() ) ).setNotDraggable() );
 		}
 
-		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
 		final int y = 40;
 		final int x = 80 + 44;
 		this.addSlotToContainer( new SlotFakeTypeOnly( inv, 0, x, y ) );

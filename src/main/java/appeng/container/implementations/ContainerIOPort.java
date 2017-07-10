@@ -20,7 +20,7 @@ package appeng.container.implementations;
 
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.FullnessMode;
 import appeng.api.config.OperationMode;
 import appeng.api.config.RedstoneMode;
@@ -58,7 +58,7 @@ public class ContainerIOPort extends ContainerUpgradeable
 		int offX = 19;
 		int offY = 17;
 
-		final IItemHandler cells = this.getUpgradeable().getInventoryByName( "cells" );
+		final IItemHandlerModifiable cells = this.getUpgradeable().getInventoryByName( "cells" );
 
 		for( int y = 0; y < 3; y++ )
 		{
@@ -78,7 +78,7 @@ public class ContainerIOPort extends ContainerUpgradeable
 			}
 		}
 
-		final IItemHandler upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
+		final IItemHandlerModifiable upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 0, 187, 8, this.getInventoryPlayer() ) ).setNotDraggable() );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 1, 187, 8 + 18, this.getInventoryPlayer() ) ).setNotDraggable() );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 2, 187, 8 + 18 * 2, this.getInventoryPlayer() ) ).setNotDraggable() );

@@ -40,6 +40,7 @@ import appeng.util.Platform;
 import appeng.util.inv.WrapperChainedItemHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
@@ -233,6 +234,30 @@ public class PartP2PItems extends PartP2PTunnel<PartP2PItems> implements IItemHa
 			}
 		}
 	}
+	
+	@Override
+	public boolean hasCapability( Capability<?> capabilityClass )
+	{
+		if( capabilityClass == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+		{
+			return true;
+		}
+
+		return super.hasCapability( capabilityClass );
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getCapability( Capability<T> capabilityClass )
+	{
+		if( capabilityClass == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+		{
+			return (T) this;
+		}
+
+		return super.getCapability( capabilityClass );
+	}
+	
 
 	@Override
 	public int getSlots()

@@ -33,7 +33,6 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 
@@ -55,7 +54,7 @@ public class AppEngCraftingSlot extends AppEngSlot
 	 */
 	private int amountCrafted;
 
-	public AppEngCraftingSlot( final EntityPlayer par1EntityPlayer, final IItemHandlerModifiable par2IInventory, final IItemHandler par3IInventory, final int par4, final int par5, final int par6 )
+	public AppEngCraftingSlot( final EntityPlayer par1EntityPlayer, final IItemHandlerModifiable par2IInventory, final IItemHandlerModifiable par3IInventory, final int par4, final int par5, final int par6 )
 	{
 		super( par3IInventory, par4, par5, par6 );
 		this.thePlayer = par1EntityPlayer;

@@ -60,7 +60,7 @@ public class SlotCraftingTerm extends AppEngCraftingSlot
 	private final IStorageMonitorable storage;
 	private final IContainerCraftingPacket container;
 
-	public SlotCraftingTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IItemHandlerModifiable cMatrix, final IItemHandlerModifiable secondMatrix, final IItemHandler output, final int x, final int y, final IContainerCraftingPacket ccp )
+	public SlotCraftingTerm( final EntityPlayer player, final BaseActionSource mySrc, final IEnergySource energySrc, final IStorageMonitorable storage, final IItemHandlerModifiable cMatrix, final IItemHandlerModifiable secondMatrix, final IItemHandlerModifiable output, final int x, final int y, final IContainerCraftingPacket ccp )
 	{
 		super( player, cMatrix, output, 0, x, y );
 		this.energySrc = energySrc;

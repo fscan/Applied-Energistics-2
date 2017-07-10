@@ -118,6 +118,7 @@ public class AppEngInternalInventory extends ItemStackHandler implements Iterabl
 			}
 			this.getTileEntity().onChangeInventory( this, slot, currentOp, removed, added );								
 		}
+		super.onContentsChanged( slot );
     }
 	
 	protected boolean eventsEnabled()

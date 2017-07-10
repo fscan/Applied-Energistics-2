@@ -47,7 +47,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class ContainerUpgradeable extends AEBaseContainer implements IOptionalSlotHost
@@ -136,7 +136,7 @@ public class ContainerUpgradeable extends AEBaseContainer implements IOptionalSl
 	{
 		this.setupUpgrades();
 
-		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
 		final int y = 40;
 		final int x = 80;
 		this.addSlotToContainer( new SlotFakeTypeOnly( inv, 0, x, y ) );
@@ -157,7 +157,7 @@ public class ContainerUpgradeable extends AEBaseContainer implements IOptionalSl
 
 	protected void setupUpgrades()
 	{
-		final IItemHandler upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
+		final IItemHandlerModifiable upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
 		if( this.availableUpgrades() > 0 )
 		{
 			this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 0, 187, 8, this.getInventoryPlayer() ) ).setNotDraggable() );

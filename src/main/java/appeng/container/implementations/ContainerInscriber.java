@@ -22,7 +22,7 @@ package appeng.container.implementations;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.AEApi;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.features.IInscriberRecipe;
@@ -60,7 +60,7 @@ public class ContainerInscriber extends ContainerUpgradeable implements IProgres
 		super( ip, te );
 		this.ti = te;
 
-		IItemHandler inv = te.getInternalInventory();
+		IItemHandlerModifiable inv = te.getInternalInventory();
 		
 		this.addSlotToContainer( this.top = new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.INSCRIBER_PLATE, inv, 0, 45, 16, this.getInventoryPlayer() ) );
 		this.addSlotToContainer( this.bottom = new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.INSCRIBER_PLATE, inv, 1, 45, 62, this.getInventoryPlayer() ) );

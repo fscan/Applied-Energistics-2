@@ -26,7 +26,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.AEApi;
@@ -59,7 +59,7 @@ public class SlotRestrictedInput extends AppEngSlot
 	private boolean allowEdit = true;
 	private int stackLimit = -1;
 
-	public SlotRestrictedInput( final PlacableItemType valid, final IItemHandler i, final int slotIndex, final int x, final int y, final InventoryPlayer p )
+	public SlotRestrictedInput( final PlacableItemType valid, final IItemHandlerModifiable i, final int slotIndex, final int x, final int y, final InventoryPlayer p )
 	{
 		super( i, slotIndex, x, y );
 		this.which = valid;

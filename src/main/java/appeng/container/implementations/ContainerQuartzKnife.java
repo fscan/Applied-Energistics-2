@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 
 import appeng.api.AEApi;
 import appeng.container.AEBaseContainer;
-import appeng.container.slot.QuartzKnifeOutput;
+import appeng.container.slot.SlotOutput;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.contents.QuartzKnifeObj;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class ContainerQuartzKnife extends AEBaseContainer
@@ -42,9 +43,7 @@ public class ContainerQuartzKnife extends AEBaseContainer
 
 	private final QuartzKnifeObj toolInv;
 
-	private final IItemHandler inSlot = new AppEngInternalInventory(null, 1, 1);
-	private final SlotRestrictedInput metals;
-	private final QuartzKnifeOutput output;
+	private final IItemHandlerModifiable inSlot = new AppEngInternalInventory(null, 1, 1);
 	private String myName = "";
 
 	public ContainerQuartzKnife( final InventoryPlayer ip, final QuartzKnifeObj te )
@@ -52,11 +51,8 @@ public class ContainerQuartzKnife extends AEBaseContainer
 		super( ip, null, null );
 		this.toolInv = te;
 
-		this.metals = new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.METAL_INGOTS, this.inSlot, 0, 94, 44, ip );
-		this.addSlotToContainer( this.metals );
-
-		this.output = new QuartzKnifeOutput( new QuartzKniveItemHandler( this.inSlot ), 0, 134, 44, -1 );
-		this.addSlotToContainer( this.output );
+		this.addSlotToContainer( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.METAL_INGOTS, this.inSlot, 0, 94, 44, ip ) );
+		this.addSlotToContainer( new QuartzKniveSlot( this.inSlot, 0, 134, 44, -1  ) );
 
 		this.lockPlayerInventorySlot( ip.currentItem );
 
@@ -104,26 +100,18 @@ public class ContainerQuartzKnife extends AEBaseContainer
 		}
 	}
 	
-	private class QuartzKniveItemHandler implements IItemHandler
-	{		
-		private final IItemHandler baseInv;
-		
-		public QuartzKniveItemHandler(final IItemHandler input)
+	private class QuartzKniveSlot extends SlotOutput
+	{
+		public QuartzKniveSlot( IItemHandlerModifiable a, int b, int c, int d, int i ) 
 		{
-			this.baseInv = input;
+			super(a, b, c, d, i);
 		}
 		
-	    @Override
-	    public int getSlotLimit(int slot)
+		@Override
+	    public ItemStack getStack()
 	    {
-	        return baseInv.getSlotLimit(slot);
-	    }
-	    
-	    @Override
-	    @Nonnull
-	    public ItemStack getStackInSlot(int slot)
-	    {
-	    	final ItemStack input = baseInv.getStackInSlot( slot );
+			final IItemHandler baseInv = getItemHandler();
+			final ItemStack input = baseInv.getStackInSlot( 0 );
 			if( input == ItemStack.EMPTY )
 			{
 				return ItemStack.EMPTY;
@@ -142,56 +130,43 @@ public class ContainerQuartzKnife extends AEBaseContainer
 					} ).orElse( ItemStack.EMPTY );
 				}
 			}
-
 			return ItemStack.EMPTY;
 	    }
-
-	    @Nonnull
-	    public ItemStack extractItem(int slot, int amount, boolean simulate)
-	    {
-			final ItemStack is = this.getStackInSlot( 0 );
-			if( !is.isEmpty() )
-			{
-				if( this.makePlate(simulate) )
-				{
-					return is;
-				}
-			}
-			return ItemStack.EMPTY;
-	    }
-	    
-		private boolean makePlate(boolean simulate)
-		{
-			if( !baseInv.extractItem(0, 1, simulate).isEmpty() )
-			{
-				if (!simulate)
-				{
-					final ItemStack item = ContainerQuartzKnife.this.toolInv.getItemStack();
-					item.damageItem( 1, getPlayerInv().player );
 		
-					if( item.getCount() == 0 )
-					{
-						getPlayerInv().mainInventory.add( getPlayerInv().currentItem, ItemStack.EMPTY );
-						MinecraftForge.EVENT_BUS.post( new PlayerDestroyItemEvent( getPlayerInv().player, item, null ) );
-					}
-				}
-				return true;
+		@Override
+	    @Nonnull
+	    public ItemStack decrStackSize(int amount)
+	    {
+			ItemStack ret = getStack();
+			if ( !ret.isEmpty() )
+			{
+				makePlate();
+			}			
+			return ret;
+	    }
+		
+		@Override
+		public void putStack( final ItemStack stack )
+		{
+			if ( stack.isEmpty() )
+			{
+				makePlate();
 			}
-			return false;
 		}
-
-		@Override
-		public int getSlots() 
+		
+		private void makePlate()
 		{
-			return baseInv.getSlots();
-		}
-
-		@Override
-		public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) 
-		{
-			//readonly
-			return stack;
-		}
-	}
+			if( !getItemHandler().extractItem(0, 1, false).isEmpty() )
+			{
+				final ItemStack item = ContainerQuartzKnife.this.toolInv.getItemStack();
+				item.damageItem( 1, getPlayerInv().player );
 	
+				if( item.getCount() == 0 )
+				{
+					getPlayerInv().mainInventory.add( getPlayerInv().currentItem, ItemStack.EMPTY );
+					MinecraftForge.EVENT_BUS.post( new PlayerDestroyItemEvent( getPlayerInv().player, item, null ) );
+				}
+			}
+		}
+	}	
 }

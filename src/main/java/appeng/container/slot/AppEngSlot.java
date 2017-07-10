@@ -22,7 +22,7 @@ package appeng.container.slot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.SlotItemHandler;
 import appeng.container.AEBaseContainer;
 
@@ -39,7 +39,7 @@ public class AppEngSlot extends SlotItemHandler
 	private hasCalculatedValidness isValid;
 	private boolean isDisplay = false;
 
-	public AppEngSlot( final IItemHandler inv, final int idx, final int x, final int y )
+	public AppEngSlot( final IItemHandlerModifiable inv, final int idx, final int x, final int y )
 	{
 		super( inv, idx, x, y );
 		this.defX = x;

@@ -20,13 +20,13 @@ package appeng.container.slot;
 
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class SlotFakeTypeOnly extends SlotFake
 {
 
-	public SlotFakeTypeOnly( final IItemHandler inv, final int idx, final int x, final int y )
+	public SlotFakeTypeOnly( final IItemHandlerModifiable inv, final int idx, final int x, final int y )
 	{
 		super( inv, idx, x, y );
 	}

@@ -20,7 +20,7 @@ package appeng.container.implementations;
 
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.Settings;
@@ -57,7 +57,7 @@ public class ContainerFormationPlane extends ContainerUpgradeable
 		final int xo = 8;
 		final int yo = 23 + 6;
 
-		final IItemHandler config = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandlerModifiable config = this.getUpgradeable().getInventoryByName( "config" );
 		for( int y = 0; y < 7; y++ )
 		{
 			for( int x = 0; x < 9; x++ )
@@ -73,7 +73,7 @@ public class ContainerFormationPlane extends ContainerUpgradeable
 			}
 		}
 
-		final IItemHandler upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
+		final IItemHandlerModifiable upgrades = this.getUpgradeable().getInventoryByName( "upgrades" );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 0, 187, 8, this.getInventoryPlayer() ) ).setNotDraggable() );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 1, 187, 8 + 18, this.getInventoryPlayer() ) ).setNotDraggable() );
 		this.addSlotToContainer( ( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.UPGRADES, upgrades, 2, 187, 8 + 18 * 2, this.getInventoryPlayer() ) ).setNotDraggable() );

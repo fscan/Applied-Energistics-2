@@ -21,7 +21,7 @@ package appeng.container.slot;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class SlotInaccessible extends AppEngSlot
@@ -29,7 +29,7 @@ public class SlotInaccessible extends AppEngSlot
 
 	private ItemStack dspStack = ItemStack.EMPTY;
 
-	public SlotInaccessible( final IItemHandler i, final int slotIdx, final int x, final int y )
+	public SlotInaccessible( final IItemHandlerModifiable i, final int slotIdx, final int x, final int y )
 	{
 		super( i, slotIdx, x, y );
 	}

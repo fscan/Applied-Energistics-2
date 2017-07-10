@@ -48,11 +48,14 @@ public abstract class AEBaseInvTile extends AEBaseTile implements IAEAppEngInven
 	public void readFromNBT_AEBaseInvTile( final net.minecraft.nbt.NBTTagCompound data )
 	{
 		final IItemHandlerModifiable inv = this.getInternalInventory();
-		final NBTTagCompound opt = data.getCompoundTag( "inv" );
-		for( int x = 0; x < inv.getSlots(); x++ )
+		if ( inv != null )
 		{
-			final NBTTagCompound item = opt.getCompoundTag( "item" + x );
-			inv.setStackInSlot( x, new ItemStack( item ) );
+			final NBTTagCompound opt = data.getCompoundTag( "inv" );
+			for( int x = 0; x < inv.getSlots(); x++ )
+			{
+				final NBTTagCompound item = opt.getCompoundTag( "item" + x );
+				inv.setStackInSlot( x, new ItemStack( item ) );
+			}
 		}
 	}
 
@@ -62,18 +65,21 @@ public abstract class AEBaseInvTile extends AEBaseTile implements IAEAppEngInven
 	public void writeToNBT_AEBaseInvTile( final net.minecraft.nbt.NBTTagCompound data )
 	{
 		final IItemHandlerModifiable inv = this.getInternalInventory();
-		final NBTTagCompound opt = new NBTTagCompound();
-		for( int x = 0; x < inv.getSlots(); x++ )
+		if ( inv != null )
 		{
-			final NBTTagCompound item = new NBTTagCompound();
-			final ItemStack is = inv.getStackInSlot( x );
-			if( !is.isEmpty() )
+			final NBTTagCompound opt = new NBTTagCompound();
+			for( int x = 0; x < inv.getSlots(); x++ )
 			{
-				is.writeToNBT( item );
+				final NBTTagCompound item = new NBTTagCompound();
+				final ItemStack is = inv.getStackInSlot( x );
+				if( !is.isEmpty() )
+				{
+					is.writeToNBT( item );
+				}
+				opt.setTag( "item" + x, item );
 			}
-			opt.setTag( "item" + x, item );
+			data.setTag( "inv", opt );
 		}
-		data.setTag( "inv", opt );
 	}
 
 	

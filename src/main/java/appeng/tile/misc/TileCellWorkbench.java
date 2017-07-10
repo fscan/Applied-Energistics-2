@@ -36,12 +36,10 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
-import appeng.util.helpers.ItemHandlerUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 
@@ -52,8 +50,8 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 	private final AppEngInternalAEInventory config = new AppEngInternalAEInventory( this, 63 );
 	private final ConfigManager manager = new ConfigManager( this );
 
-	private IItemHandler cacheUpgrades = null;
-	private IItemHandler cacheConfig = null;
+	private IItemHandlerModifiable cacheUpgrades = null;
+	private IItemHandlerModifiable cacheConfig = null;
 	private boolean locked = false;
 
 	public TileCellWorkbench()
@@ -62,7 +60,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		this.cell.setEnableClientEvents( true );
 	}
 
-	public IItemHandler getCellUpgradeInventory()
+	public IItemHandlerModifiable getCellUpgradeInventory()
 	{
 		if( this.cacheUpgrades == null )
 		{
@@ -78,7 +76,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IItemHandler inv = cell.getUpgradesInventory( is );
+			final IItemHandlerModifiable inv = cell.getUpgradesInventory( is );
 			if( inv == null )
 			{
 				return null;
@@ -152,7 +150,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 			this.cacheUpgrades = null;
 			this.cacheConfig = null;
 
-			final IItemHandler configInventory = this.getCellConfigInventory();
+			final IItemHandlerModifiable configInventory = this.getCellConfigInventory();
 			if( configInventory != null )
 			{
 				boolean cellHasConfig = false;
@@ -176,7 +174,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				{
 					for( int x = 0; x < this.config.getSlots(); x++ )
 					{
-						ItemHandlerUtil.setStackInSlot( configInventory, x, this.config.getStackInSlot( x ) );
+						configInventory.setStackInSlot( x, this.config.getStackInSlot( x ) );
 					}
 
 					//TODO: should not be needed anymore
@@ -197,12 +195,12 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		}
 		else if( inv == this.config && !this.locked )
 		{
-			final IItemHandler c = this.getCellConfigInventory();
+			final IItemHandlerModifiable c = this.getCellConfigInventory();
 			if( c != null )
 			{
 				for( int x = 0; x < this.config.getSlots(); x++ )
 				{				
-					ItemHandlerUtil.setStackInSlot( c, x, this.config.getStackInSlot( x ) );
+					c.setStackInSlot( x, this.config.getStackInSlot( x ) );
 				}
 
 				//TODO: should not be needed anymore
@@ -211,7 +209,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 		}
 	}
 
-	private IItemHandler getCellConfigInventory()
+	private IItemHandlerModifiable getCellConfigInventory()
 	{
 		if( this.cacheConfig == null )
 		{
@@ -227,7 +225,7 @@ public class TileCellWorkbench extends AEBaseTile implements IUpgradeableHost, I
 				return null;
 			}
 
-			final IItemHandler inv = cell.getConfigInventory( is );
+			final IItemHandlerModifiable inv = cell.getConfigInventory( is );
 			if( inv == null )
 			{
 				return null;

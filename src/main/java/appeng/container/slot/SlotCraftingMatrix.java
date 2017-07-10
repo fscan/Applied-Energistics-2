@@ -21,7 +21,7 @@ package appeng.container.slot;
 
 import appeng.container.AEBaseContainer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class SlotCraftingMatrix extends AppEngSlot
@@ -29,7 +29,7 @@ public class SlotCraftingMatrix extends AppEngSlot
 
 	private final AEBaseContainer c;
 
-	public SlotCraftingMatrix( final AEBaseContainer c, final IItemHandler par1iInventory, final int par2, final int par3, final int par4 )
+	public SlotCraftingMatrix( final AEBaseContainer c, final IItemHandlerModifiable par1iInventory, final int par2, final int par3, final int par4 )
 	{
 		super( par1iInventory, par2, par3, par4 );
 		this.c = c;

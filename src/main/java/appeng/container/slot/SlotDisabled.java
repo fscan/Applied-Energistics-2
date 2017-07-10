@@ -21,13 +21,13 @@ package appeng.container.slot;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 
 public class SlotDisabled extends AppEngSlot
 {
 
-	public SlotDisabled( final IItemHandler par1iInventory, final int slotIndex, final int x, final int y )
+	public SlotDisabled( final IItemHandlerModifiable par1iInventory, final int slotIndex, final int x, final int y )
 	{
 		super( par1iInventory, slotIndex, x, y );
 	}

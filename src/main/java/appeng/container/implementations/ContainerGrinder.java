@@ -20,7 +20,7 @@ package appeng.container.implementations;
 
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotInaccessible;
 import appeng.container.slot.SlotOutput;
@@ -35,7 +35,7 @@ public class ContainerGrinder extends AEBaseContainer
 	{
 		super( ip, grinder, null );
 
-		IItemHandler inv = grinder.getInternalInventory();
+		IItemHandlerModifiable inv = grinder.getInternalInventory();
 		
 		this.addSlotToContainer( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.ORE, inv, 0, 12, 17, this.getInventoryPlayer() ) );
 		this.addSlotToContainer( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.ORE, inv, 1, 12 + 18, 17, this.getInventoryPlayer() ) );

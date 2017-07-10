@@ -78,7 +78,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.EntityHandsInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
@@ -400,7 +400,7 @@ public abstract class AEBaseContainer extends Container
 
 	protected void bindPlayerInventory( final InventoryPlayer inventoryPlayer, final int offsetX, final int offsetY )
 	{
-		IItemHandler ih = new PlayerInvWrapper(inventoryPlayer);
+		IItemHandlerModifiable ih = new PlayerInvWrapper(inventoryPlayer);
 		
 		// bind player inventory
 		for( int i = 0; i < 3; i++ )

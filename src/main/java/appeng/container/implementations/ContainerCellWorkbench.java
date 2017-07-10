@@ -35,15 +35,16 @@ import appeng.container.slot.OptionalSlotRestrictedInput;
 import appeng.container.slot.SlotFakeTypeOnly;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.tile.misc.TileCellWorkbench;
+import appeng.util.Lazy;
 import appeng.util.Platform;
 import appeng.util.helpers.ItemHandlerUtil;
+import appeng.util.inv.WrapperLazyItemHandler;
 import appeng.util.iterators.NullIterator;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 
@@ -90,11 +91,11 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 	@Override
 	protected void setupConfig()
 	{
-		final IItemHandler cell = this.getUpgradeable().getInventoryByName( "cell" );
+		final IItemHandlerModifiable cell = this.getUpgradeable().getInventoryByName( "cell" );
 		this.addSlotToContainer( new SlotRestrictedInput( SlotRestrictedInput.PlacableItemType.WORKBENCH_CELL, cell, 0, 152, 8, this.getPlayerInv() ) );
 
-		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
-		final IItemHandler upgradeInventory = this.getCellUpgradeInventory();
+		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
+		final WrapperLazyItemHandler upgradeInventory = new WrapperLazyItemHandler( new Lazy<>( () -> this.getCellUpgradeInventory() ) );
 		// null, 3 * 8 );
 
 		int offset = 0;
@@ -185,9 +186,9 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 		return idx < this.availableUpgrades();
 	}
 
-	public IItemHandler getCellUpgradeInventory()
+	public IItemHandlerModifiable getCellUpgradeInventory()
 	{
-		final IItemHandler upgradeInventory = this.workBench.getCellUpgradeInventory();
+		final IItemHandlerModifiable upgradeInventory = this.workBench.getCellUpgradeInventory();
 
 		return upgradeInventory == null ? (IItemHandlerModifiable) EmptyHandler.INSTANCE : upgradeInventory;
 	}
@@ -221,7 +222,7 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 
 	public void partition()
 	{
-		final IItemHandler inv = this.getUpgradeable().getInventoryByName( "config" );
+		final IItemHandlerModifiable inv = this.getUpgradeable().getInventoryByName( "config" );
 
 		final IMEInventory<IAEItemStack> cellInv = AEApi.instance().registries().cell().getCellInventory( this.getUpgradeable().getInventoryByName( "cell" ).getStackInSlot( 0 ), null, StorageChannel.ITEMS );
 
@@ -238,11 +239,11 @@ public class ContainerCellWorkbench extends ContainerUpgradeable
 			{
 				final ItemStack g = i.next().getItemStack();
 				g.setCount( 1 );
-				ItemHandlerUtil.setStackInSlot( inv, x, g );
+				inv.setStackInSlot( x, g );
 			}
 			else
 			{
-				ItemHandlerUtil.setStackInSlot( inv, x, ItemStack.EMPTY );
+				inv.setStackInSlot( x, ItemStack.EMPTY );
 			}
 		}
 
