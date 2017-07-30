@@ -22,21 +22,20 @@ package appeng.debug;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
-import appeng.tile.AEBaseTile;
+import appeng.tile.AEBaseInvTile;
+import appeng.util.inv.InvOperation;
 
 
-public class TileItemGen extends AEBaseTile implements IInventory
+public class TileItemGen extends AEBaseInvTile
 {
-
 	private static final Queue<ItemStack> POSSIBLE_ITEMS = new LinkedList<>();
+	private IItemHandler itemGen = new ItemGenHandler();
 
 	public TileItemGen()
 	{
@@ -57,135 +56,69 @@ public class TileItemGen extends AEBaseTile implements IInventory
 					else
 					{
 						final NonNullList<ItemStack> list = NonNullList.create();
-						mi.getSubItems( mi.getCreativeTab(), list );
-						POSSIBLE_ITEMS.addAll( list );
+						if( mi.getCreativeTab() != null )
+						{
+							mi.getSubItems( mi.getCreativeTab(), list );
+							POSSIBLE_ITEMS.addAll( list );
+						}
 					}
 				}
 			}
 		}
 	}
 
-	@Override
-	public int getSizeInventory()
+	private class ItemGenHandler implements IItemHandler
 	{
-		return 1;
-	}
 
-	@Override
-	public ItemStack getStackInSlot( final int i )
-	{
-		return this.getRandomItem();
-	}
-
-	private ItemStack getRandomItem()
-	{
-		// Safeguard for crash
-		ItemStack testStack = POSSIBLE_ITEMS.peek();
-		if( testStack.isEmpty() )
+		@Override
+		public int getSlots()
 		{
-			testStack = new ItemStack( Blocks.COBBLESTONE, 1 );
+			return 1;
 		}
-		return testStack;
+
+		@Override
+		public ItemStack getStackInSlot( int slot )
+		{
+			return POSSIBLE_ITEMS.peek();
+		}
+
+		@Override
+		public ItemStack insertItem( int slot, ItemStack stack, boolean simulate )
+		{
+			return stack;
+		}
+
+		@Override
+		public ItemStack extractItem( int slot, int amount, boolean simulate )
+		{
+			if( simulate )
+			{
+				return ItemHandlerHelper.copyStackWithSize( POSSIBLE_ITEMS.peek(), amount );
+			}
+			else
+			{
+				final ItemStack a = POSSIBLE_ITEMS.poll();
+				POSSIBLE_ITEMS.add( a );
+				return ItemHandlerHelper.copyStackWithSize( a, amount );
+			}
+		}
+
+		@Override
+		public int getSlotLimit( int slot )
+		{
+			return 1;
+		}
 	}
 
 	@Override
-	public ItemStack decrStackSize( final int i, final int j )
+	public IItemHandler getInternalInventory()
 	{
-		final ItemStack a = POSSIBLE_ITEMS.poll();
-		final ItemStack out = a.copy();
-		POSSIBLE_ITEMS.add( a );
-		return out;
+		return itemGen;
 	}
 
 	@Override
-	public ItemStack removeStackFromSlot( final int i )
+	public void onChangeInventory( IItemHandler inv, int slot, InvOperation mc, ItemStack removed, ItemStack added )
 	{
-		return ItemStack.EMPTY;
-	}
-
-	@Override
-	public void setInventorySlotContents( final int i, final ItemStack itemstack )
-	{
-		final ItemStack a = POSSIBLE_ITEMS.poll();
-		POSSIBLE_ITEMS.add( a );
-	}
-
-	@Override
-	public String getName()
-	{
-		return null;
-	}
-
-	@Override
-	public boolean hasCustomName()
-	{
-		return false;
-	}
-
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return 1;
-	}
-
-	@Override
-	public boolean isUsableByPlayer( final EntityPlayer entityplayer )
-	{
-		return false;
-	}
-
-	@Override
-	public void openInventory( final EntityPlayer player )
-	{
-
-	}
-
-	@Override
-	public void closeInventory( final EntityPlayer player )
-	{
-
-	}
-
-	@Override
-	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
-	{
-		return false;
-	}
-
-	@Override
-	public ITextComponent getDisplayName()
-	{
-		return null;
-	}
-
-	@Override
-	public int getField( final int id )
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField( final int id, final int value )
-	{
-
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void clear()
-	{
-
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
+		// NOP
 	}
 }
