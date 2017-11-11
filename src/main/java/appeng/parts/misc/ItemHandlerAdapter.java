@@ -41,6 +41,8 @@ import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
+import appeng.me.GridAccessException;
+import appeng.me.helpers.AENetworkProxy;
 import appeng.me.storage.ITickingMonitor;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
@@ -62,9 +64,12 @@ class ItemHandlerAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<IAE
 
 	private IAEItemStack[] cachedAeStacks = new IAEItemStack[0];
 
-	ItemHandlerAdapter( IItemHandler itemHandler )
+	private final AENetworkProxy proxy;
+	
+	ItemHandlerAdapter( IItemHandler itemHandler, AENetworkProxy proxy )
 	{
 		this.itemHandler = itemHandler;
+		this.proxy = proxy;
 	}
 
 	@Override
@@ -89,9 +94,16 @@ class ItemHandlerAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<IAE
 			return iox;
 		}
 
-		if( type == Actionable.MODULATE )
+		if( type == Actionable.MODULATE )		
 		{
-			this.onTick();
+			try
+			{
+				this.proxy.getTick().alertDevice( this.proxy.getNode() );
+			}
+			catch(GridAccessException ex)
+			{
+				//meh
+			}
 		}
 
 		return AEItemStack.fromItemStack( remaining );
@@ -167,7 +179,14 @@ class ItemHandlerAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<IAE
 		{
 			if( mode == Actionable.MODULATE )
 			{
-				this.onTick();
+				try
+				{
+					this.proxy.getTick().alertDevice( this.proxy.getNode() );
+				}
+				catch(GridAccessException ex)
+				{
+					//meh
+				}
 			}
 
 			return AEItemStack.fromItemStack( gathered );
